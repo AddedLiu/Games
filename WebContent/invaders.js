@@ -1,3 +1,4 @@
+// Create an game object.
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', {
 	preload : preload,
 	create : create,
@@ -5,6 +6,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', {
 	render : render
 });
 
+// Pre-load function, load image and aduio, Bulit-in function.
 function preload() {
 
 	game.load.image('bullet', 'assets/bullet0.png');
@@ -21,33 +23,60 @@ function preload() {
 	game.load.image('ufo', 'assets/ufo');
 }
 
+// Player sprite .
 var player;
+// Aliens group.
 var aliens;
+// Bullets group with LV:1;
 var bullets;
+// Bullets group with LV:2;
 var bulleters;
+// Bullets group with LV:3.
 var bulletests;
+// Bullet LV, same with before.
 var bulletLV = 1;
+// Boss's HP.
 var bossHP = 200;
+// Boss sprite.
 var boss;
+// Bullets damage with LV:1
 var b1 = 1;
+// Bullets damage with LV:2
 var b2 = 2;
+// Bullets damage with LV:3
 var b3 = 4;
+// Player's bullet time.
 var bulletTime = 0;
+// Keyboard listener.
 var cursors;
+// Fire button, [SPACE] key listener.
 var fireButton;
+// Explosions sprite, with play kaboom animation.
 var explosions;
+// Background.
 var starfield;
+// Player score.
 var score = 0;
+// Show player score on screen.
 var scoreString = '';
+// Score text, which equals ("Score: %d", score)
 var scoreText;
+// Lives player have.
 var lives;
+// Enemy's bullet sprite.
 var enemyBullet;
+// Enemy's bullet group.
 var enemyBullets;
+// Enemy's firing timer.
 var firingTimer = 0;
+// State text, win or game over.
 var stateText;
+// Total aliens, boss appear after you defeat total aliens.
 var totalAliens = 100;
+// Alien timer, alien refresh time.
 var alienTimer = 0;
 
+// Create function, built-in function.
 function create() {
 
 	game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -93,7 +122,7 @@ function create() {
 	enemyBullets.setAll('outOfBoundsKill', true);
 	enemyBullets.setAll('checkWorldBounds', true);
 
-	// The hero!
+	// The player!
 	player = game.add.sprite(400, 500, 'ship');
 	player.anchor.setTo(0.5, 0.5);
 	game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -104,6 +133,7 @@ function create() {
 	aliens.enableBody = true;
 	aliens.physicsBodyType = Phaser.Physics.ARCADE;
 
+	// Refresh ten aliens.
 	createAliens();
 
 	// The score
@@ -120,7 +150,7 @@ function create() {
 		fill : '#fff'
 	});
 
-	// Text
+	// State text
 	stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', {
 		font : '84px Arial',
 		fill : '#fff'
@@ -128,9 +158,11 @@ function create() {
 	stateText.anchor.setTo(0.5, 0.5);
 	stateText.visible = false;
 
+	// Show player's lives.
 	for (var i = 0; i < 3; i++) {
 		var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'ship');
 		ship.anchor.setTo(0.5, 0.5);
+		// Rotate 90 degree
 		ship.angle = 90;
 		ship.alpha = 0.4;
 	}
@@ -146,6 +178,7 @@ function create() {
 
 }
 
+// Refresh ten aliens.
 function createAliens() {
 
 	aliens.x = 100;
@@ -171,6 +204,7 @@ function createAliens() {
 
 }
 
+// Create boss if it must be.
 function createBoss() {
 	boss = game.add.sprite(0, 0, 'boss');
 	boss.anchor.setTo(0, 0);
@@ -180,6 +214,7 @@ function createBoss() {
 	}, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 }
 
+// Setting kaboom animation
 function setupInvader(invader) {
 
 	invader.anchor.x = 0.5;
@@ -188,12 +223,14 @@ function setupInvader(invader) {
 
 }
 
+// Make aliens decend.
 function descend() {
 
 	aliens.y += 10;
 
 }
 
+// update function, built-in function.
 function update() {
 
 	// Scroll the background
@@ -214,19 +251,22 @@ function update() {
 			player.body.velocity.y = 200;
 		}
 
-		// Firing?
+		// Player firing?
 		if (fireButton.isDown) {
 			fireBullet();
 		}
 
+		// Enemy firing.
 		if (game.time.now > firingTimer) {
 			enemyFires();
 		}
 
+		// Boss firing.
 		if (game.time.now > firingTimer && boss) {
 			bossFires();
 		}
 
+		// Refresh aline.
 		if (game.time.now > alienTimer && totalAliens > 0) {
 			createAliens();
 		}
@@ -250,6 +290,7 @@ function update() {
 
 }
 
+// Player bullets with aliens collision.
 function collisionHandler(bullet, alien) {
 
 	// When a bullet hits an alien we kill them both
@@ -272,6 +313,7 @@ function collisionHandler(bullet, alien) {
 
 }
 
+// Player bullet with boss collision.
 function collisionHandlerb(boss, bullet) {
 
 	// When a bullet hits an alien we kill them both
@@ -302,6 +344,7 @@ function collisionHandlerb(boss, bullet) {
 
 }
 
+// Enemy bullets with player collision.
 function enemyHitsPlayer(player, bullet) {
 
 	bullet.kill();
@@ -331,6 +374,7 @@ function enemyHitsPlayer(player, bullet) {
 
 }
 
+// Aliens firing.
 function enemyFires() {
 	aliens.forEachAlive(function(alien) {
 		// Grab the first bullet we can from the pool
@@ -345,6 +389,7 @@ function enemyFires() {
 
 }
 
+// Boss firing.
 function bossFires() {
 	// Grab the first bullet we can from the pool
 	enemyBullet = enemyBullets.getFirstExists(false);
@@ -356,6 +401,7 @@ function bossFires() {
 	firingTimer = game.time.now + 200;
 }
 
+// Player firing.
 function fireBullet() {
 
 	// To avoid them being allowed to fire too fast we set a time limit
@@ -399,6 +445,7 @@ function fireBullet() {
 
 }
 
+// Reset all bullet.
 function resetBullet(bullet) {
 
 	// Called if the bullet goes out of the screen
@@ -406,6 +453,7 @@ function resetBullet(bullet) {
 
 }
 
+// Restart game.
 function restart() {
 
 	// Reset boss if necessary
@@ -433,6 +481,7 @@ function restart() {
 
 }
 
+// Render function, built-in function.
 function render() {
 
 	// for (var i = 0; i < aliens.length; i++)
