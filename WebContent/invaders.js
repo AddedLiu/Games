@@ -20,7 +20,7 @@ function preload() {
 	game.load.image('boss', 'assets/boss1.png');
 	game.load.image('bulleter', 'assets/bullet1.png');
 	game.load.image('bulletest', 'assets/bullet2.png');
-	game.load.image('ufo', 'assets/ufo');
+	game.load.image('ufo', 'assets/ufo.png');
 }
 
 // Player sprite .
@@ -75,6 +75,12 @@ var stateText;
 var totalAliens = 100;
 // Alien timer, alien refresh time.
 var alienTimer = 0;
+// Ufo sprite.
+var ufo;
+// Ufo tiomer, ufo refresh time
+var ufoTimer = 29000;
+// Powerful bullte sprite.
+var powerfulBullet;
 
 // Create function, built-in function.
 function create() {
@@ -157,6 +163,11 @@ function create() {
 	});
 	stateText.anchor.setTo(0.5, 0.5);
 	stateText.visible = false;
+	// bulletLV text
+	game.add.text(game.world.width - 400, 10, 'bulletLV: '+bulletLV, {
+		font : '34px Arial',
+		fill : '#fff'
+	});
 
 	// Show player's lives.
 	for (var i = 0; i < 3; i++) {
@@ -212,6 +223,25 @@ function createBoss() {
 	game.add.tween(boss).to({
 		x : 468
 	}, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+}
+
+// Create ufo when nessarry.
+function createUfo() {
+	ufo = game.add.sprite(400, 0, 'ufo');
+	ufo.anchor.setTo(0, 0);
+	game.physics.enable(ufo, Phaser.Physics.ARCADE);
+	game.physics.arcade.moveToObject(ufo, player, 240);
+	ufoTimer = game.time.now + 30000;
+	alienTimer = game.time.now + 5000;
+}
+
+// Create powerful bullet
+function createPowerfulBuller() {
+	powerfulBullet = game.add.sprite(ufo.x, ufo.y, 'bulletUP');
+	ufo.anchor.setTo(0, 0);
+	game.physics.enable(powerfulBullet, Phaser.Physics.ARCADE);
+	game.add.tween(powerfulBullet).to( { y: 800 }, (600 - ufo.y)/600*2000, Phaser.Easing.Linear.None, 
+			true);	
 }
 
 // Setting kaboom animation
@@ -270,6 +300,11 @@ function update() {
 		if (game.time.now > alienTimer && totalAliens > 0) {
 			createAliens();
 		}
+		
+		// Create ufo sprite.
+		if (game.time.now > ufoTimer) {
+			createUfo();
+		}
 
 		// Run collision
 		game.physics.arcade.overlap(bullets, aliens, collisionHandler, null,
@@ -284,8 +319,17 @@ function update() {
 				this);
 		game.physics.arcade.overlap(bulletests, boss, collisionHandlerb, null,
 				this);
+		game.physics.arcade.overlap(bullets, ufo, collisionHandleru,
+				null, this);
+		game.physics.arcade.overlap(bulleters, ufo, collisionHandleru,
+				null, this);
+		game.physics.arcade.overlap(bulletests, ufo, collisionHandleru,
+				null, this);
 		game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer,
 				null, this);
+		game.physics.arcade.overlap(powerfulBullet, player, powerfulPlayer,
+				null, this);
+		
 	}
 
 }
@@ -344,10 +388,28 @@ function collisionHandlerb(boss, bullet) {
 
 }
 
+// Player bullet with ufo.
+function collisionHandleru(ufo, bullet){
+	bullet.kill();
+	ufo.kill();
+	// Increase the score
+	score += 20;
+	scoreText.text = scoreString + score;
+
+	// And create an explosion :)
+	var explosion = explosions.getFirstExists(false);
+	explosion.reset(ufo.body.x, ufo.body.y);
+	explosion.play('kaboom', 30, false, true);
+	createPowerfulBuller();
+}
+
+
 // Enemy bullets with player collision.
 function enemyHitsPlayer(player, bullet) {
-
+	// Kill the bullet.
 	bullet.kill();
+	// Set player's bulletLv to 1
+	bulletLV = 1;
 
 	live = lives.getFirstAlive();
 
@@ -372,6 +434,19 @@ function enemyHitsPlayer(player, bullet) {
 		game.input.onTap.addOnce(restart, this);
 	}
 
+}
+
+// Become more powerful
+function powerfulPlayer(powerfulBullet, player) {
+	powerfulBullet.kill();
+	bulletLV += 1;
+	if (bulletLV > 3) {
+		bulletLV = 3;
+	}
+	game.add.text(game.world.width - 400, 10, 'bulletLV: '+bulletLV, {
+		font : '34px Arial',
+		fill : '#fff'
+	});
 }
 
 // Aliens firing.
