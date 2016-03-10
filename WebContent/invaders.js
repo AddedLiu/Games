@@ -2,13 +2,12 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', {
 	preload : preload,
 	create : create,
-	update : update,
-	render : render
+	update : update
+//	render : render
 });
 
-// Pre-load function, load image and aduio, Bulit-in function.
+// Pre-load function, load image and aduio, don't remove.
 function preload() {
-
 	game.load.image('bullet', 'assets/bullet0.png');
 	game.load.image('enemyBullet', 'assets/enemy-bullet.png');
 	game.load.spritesheet('invader', 'assets/invader32x32x4.png', 32, 32);
@@ -82,7 +81,7 @@ var ufoTimer = 29000;
 // Powerful bullte sprite.
 var powerfulBullet;
 
-// Create function, built-in function.
+// Create function, don't remove.
 function create() {
 
 	game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -163,11 +162,6 @@ function create() {
 	});
 	stateText.anchor.setTo(0.5, 0.5);
 	stateText.visible = false;
-	// bulletLV text
-	game.add.text(game.world.width - 400, 10, 'bulletLV: '+bulletLV, {
-		font : '34px Arial',
-		fill : '#fff'
-	});
 
 	// Show player's lives.
 	for (var i = 0; i < 3; i++) {
@@ -191,28 +185,25 @@ function create() {
 
 // Refresh ten aliens.
 function createAliens() {
-
-	aliens.x = 100;
-	aliens.y = 50;
-
-	for (var x = 0; x < 10; x++) {
-		var alien = aliens.create(24 + Math.random() * 48, Math.random() * 50,
-				'invader');
+	aliens.x = 10;
+	aliens.y = 10;
+	for (var i = 0; i < 10; i++) {
+		var alien = aliens.create(80*i + 32*Math.random() + Math.random()*48,
+				10, 'invader');
 		alien.anchor.setTo(0.5, 0.5);
 		alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
 		alien.play('fly');
 		alien.body.moves = false;
-		game.add.tween(alien).to({
-			y : 550 - alien.body.y
-		}, 1000 + Math.random() * 3000, Phaser.Easing.Linear.None, true, 0,
-				1000, true);
-		game.add.tween(alien).to({
-			x : 750 - alien.body.x
-		}, 1000 + Math.random() * 3000, Phaser.Easing.Linear.None, true, 0,
-				1000, true);
+		// game.add.tween(alien).to({
+		// y : 550 - alien.body.y
+		// }, 1000 + Math.random() * 3000, Phaser.Easing.Linear.None, true, 0,
+		// 1000, true);
+		// game.add.tween(alien).to({
+		// x : 750 - alien.body.x
+		// }, 1000 + Math.random() * 3000, Phaser.Easing.Linear.None, true, 0,
+		// 1000, true);
 	}
 	alienTimer = game.time.now + 10000;
-
 }
 
 // Create boss if it must be.
@@ -240,32 +231,26 @@ function createPowerfulBuller() {
 	powerfulBullet = game.add.sprite(ufo.x, ufo.y, 'bulletUP');
 	ufo.anchor.setTo(0, 0);
 	game.physics.enable(powerfulBullet, Phaser.Physics.ARCADE);
-	game.add.tween(powerfulBullet).to( { y: 800 }, (600 - ufo.y)/600*2000, Phaser.Easing.Linear.None, 
-			true);	
+	game.add.tween(powerfulBullet).to({
+		y : 800
+	}, (600 - ufo.y) * 5, Phaser.Easing.Linear.None, true);
 }
 
 // Setting kaboom animation
 function setupInvader(invader) {
-
 	invader.anchor.x = 0.5;
 	invader.anchor.y = 0.5;
 	invader.animations.add('kaboom');
 
 }
-
 // Make aliens decend.
 function descend() {
-
 	aliens.y += 10;
-
 }
-
-// update function, built-in function.
+// update function, don't remove.
 function update() {
-
 	// Scroll the background
 	starfield.tilePosition.y += 2;
-
 	if (player.alive) {
 		// Reset the player, then check for movement keys
 		player.body.velocity.setTo(0, 0);
@@ -280,32 +265,26 @@ function update() {
 		} else if (cursors.down.isDown) {
 			player.body.velocity.y = 200;
 		}
-
 		// Player firing?
 		if (fireButton.isDown) {
 			fireBullet();
 		}
-
 		// Enemy firing.
 		if (game.time.now > firingTimer) {
 			enemyFires();
 		}
-
 		// Boss firing.
 		if (game.time.now > firingTimer && boss) {
 			bossFires();
 		}
-
 		// Refresh aline.
 		if (game.time.now > alienTimer && totalAliens > 0) {
 			createAliens();
 		}
-		
 		// Create ufo sprite.
 		if (game.time.now > ufoTimer) {
 			createUfo();
 		}
-
 		// Run collision
 		game.physics.arcade.overlap(bullets, aliens, collisionHandler, null,
 				this);
@@ -319,47 +298,37 @@ function update() {
 				this);
 		game.physics.arcade.overlap(bulletests, boss, collisionHandlerb, null,
 				this);
-		game.physics.arcade.overlap(bullets, ufo, collisionHandleru,
-				null, this);
-		game.physics.arcade.overlap(bulleters, ufo, collisionHandleru,
-				null, this);
-		game.physics.arcade.overlap(bulletests, ufo, collisionHandleru,
-				null, this);
+		game.physics.arcade
+				.overlap(bullets, ufo, collisionHandleru, null, this);
+		game.physics.arcade.overlap(bulleters, ufo, collisionHandleru, null,
+				this);
+		game.physics.arcade.overlap(bulletests, ufo, collisionHandleru, null,
+				this);
 		game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer,
 				null, this);
 		game.physics.arcade.overlap(powerfulBullet, player, powerfulPlayer,
 				null, this);
-		
 	}
-
 }
-
 // Player bullets with aliens collision.
 function collisionHandler(bullet, alien) {
-
 	// When a bullet hits an alien we kill them both
 	bullet.kill();
 	alien.kill();
 	totalAliens -= 1;
-
 	// Increase the score
 	score += 20;
 	scoreText.text = scoreString + score;
-
 	// And create an explosion :)
 	var explosion = explosions.getFirstExists(false);
 	explosion.reset(alien.body.x, alien.body.y);
 	explosion.play('kaboom', 30, false, true);
-
 	if (totalAliens == 0) {
 		createBoss();
 	}
-
 }
-
 // Player bullet with boss collision.
 function collisionHandlerb(boss, bullet) {
-
 	// When a bullet hits an alien we kill them both
 	bullet.kill();
 	if (bossHP <= 0) {
@@ -367,75 +336,62 @@ function collisionHandlerb(boss, bullet) {
 		enemyBullets.callAll('kill', this);
 		stateText.text = " You Won, \n Click to restart";
 		stateText.visible = true;
-
 		// the "click to restart" handler
 		game.input.onTap.addOnce(restart, this);
 		// And create an explosion :)
-
 	} else if (bulletLV == 1) {
 		bossHP -= b1;
+		score += 40;
 	} else if (bulletLV == 2) {
 		bossHP -= b2;
+		score += 80;
 	} else if (bulletLV == 3) {
 		bossHP -= b3;
+		score += 120;
 	}
 	var explosion = explosions.getFirstExists(false);
 	explosion.reset(bullet.body.x, boss.body.y + 282);
 	explosion.play('kaboom', 30, false, true);
 	// Increase the score
-	score += 40;
 	scoreText.text = scoreString + score;
-
 }
-
 // Player bullet with ufo.
-function collisionHandleru(ufo, bullet){
+function collisionHandleru(ufo, bullet) {
 	bullet.kill();
 	ufo.kill();
 	// Increase the score
 	score += 20;
 	scoreText.text = scoreString + score;
-
 	// And create an explosion :)
 	var explosion = explosions.getFirstExists(false);
 	explosion.reset(ufo.body.x, ufo.body.y);
 	explosion.play('kaboom', 30, false, true);
 	createPowerfulBuller();
 }
-
-
 // Enemy bullets with player collision.
 function enemyHitsPlayer(player, bullet) {
 	// Kill the bullet.
 	bullet.kill();
 	// Set player's bulletLv to 1
 	bulletLV = 1;
-
 	live = lives.getFirstAlive();
-
 	if (live) {
 		live.kill();
 	}
-
 	// And create an explosion :)
 	var explosion = explosions.getFirstExists(false);
 	explosion.reset(player.body.x, player.body.y);
 	explosion.play('kaboom', 30, false, true);
-
 	// When the player dies
 	if (lives.countLiving() < 1) {
 		player.kill();
 		enemyBullets.callAll('kill');
-
 		stateText.text = " GAME OVER \n Click to restart";
 		stateText.visible = true;
-
 		// the "click to restart" handler
 		game.input.onTap.addOnce(restart, this);
 	}
-
 }
-
 // Become more powerful
 function powerfulPlayer(powerfulBullet, player) {
 	powerfulBullet.kill();
@@ -443,12 +399,7 @@ function powerfulPlayer(powerfulBullet, player) {
 	if (bulletLV > 3) {
 		bulletLV = 3;
 	}
-	game.add.text(game.world.width - 400, 10, 'bulletLV: '+bulletLV, {
-		font : '34px Arial',
-		fill : '#fff'
-	});
 }
-
 // Aliens firing.
 function enemyFires() {
 	aliens.forEachAlive(function(alien) {
@@ -461,30 +412,24 @@ function enemyFires() {
 	});
 	if (totalAliens > 0)
 		firingTimer = game.time.now + 2000;
-
 }
-
 // Boss firing.
 function bossFires() {
 	// Grab the first bullet we can from the pool
 	enemyBullet = enemyBullets.getFirstExists(false);
 	if (enemyBullet && bossHP > 0) {
 		enemyBullet.reset(boss.body.x + 161, boss.body.y + 242);
-
 		game.physics.arcade.moveToObject(enemyBullet, player, 240);
 	}
 	firingTimer = game.time.now + 200;
 }
-
 // Player firing.
 function fireBullet() {
-
 	// To avoid them being allowed to fire too fast we set a time limit
 	if (bulletLV == 1) {
 		if (game.time.now > bulletTime) {
 			// Grab the first bullet we can from the pool
 			bullet = bullets.getFirstExists(false);
-
 			if (bullet) {
 				// And fire it
 				bullet.reset(player.x, player.y + 8);
@@ -496,7 +441,6 @@ function fireBullet() {
 		if (game.time.now > bulletTime) {
 			// Grab the first bullet we can from the pool
 			bulleter = bulleters.getFirstExists(false);
-
 			if (bulleter) {
 				// And fire it
 				bulleter.reset(player.x, player.y + 8);
@@ -508,7 +452,6 @@ function fireBullet() {
 		if (game.time.now > bulletTime) {
 			// Grab the first bullet we can from the pool
 			bulletest = bulletests.getFirstExists(false);
-
 			if (bulletest) {
 				// And fire it
 				bulletest.reset(player.x, player.y + 8);
@@ -517,20 +460,14 @@ function fireBullet() {
 			}
 		}
 	}
-
 }
-
 // Reset all bullet.
 function resetBullet(bullet) {
-
 	// Called if the bullet goes out of the screen
 	bullet.kill();
-
 }
-
 // Restart game.
 function restart() {
-
 	// Reset boss if necessary
 	if (boss) {
 		boss.kill();
@@ -538,14 +475,11 @@ function restart() {
 	}
 	// Reset aliens number
 	totalAliens = 100;
-	// A new level starts
-
 	// resets the life count
 	lives.callAll('revive');
 	// And brings the aliens back from the dead :)
 	aliens.removeAll();
 	createAliens();
-
 	// revives the player
 	player.revive();
 	// hides the text
@@ -553,15 +487,10 @@ function restart() {
 	// reset score
 	score = 0;
 	scoreText.text = scoreString + score;
-
 }
-
-// Render function, built-in function.
-function render() {
-
-	// for (var i = 0; i < aliens.length; i++)
-	// {
-	// game.debug.body(aliens.children[i]);
-	// }
-
-}
+// Render function, don't remove.
+//function render() {
+//	for (var i = 0; i < aliens.length; i++) {
+//		game.debug.body(aliens.children[i]);
+//	}
+//}
