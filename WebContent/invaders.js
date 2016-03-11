@@ -3,7 +3,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', {
 	preload : preload,
 	create : create,
 	update : update
-//	render : render
+// render : render
 });
 
 // Pre-load function, load image and aduio, don't remove.
@@ -20,6 +20,12 @@ function preload() {
 	game.load.image('bulleter', 'assets/bullet1.png');
 	game.load.image('bulletest', 'assets/bullet2.png');
 	game.load.image('ufo', 'assets/ufo.png');
+	// Fire state
+	game.load.image('firestate', 'assets/red_ball.png');
+	// Ice state
+	game.load.image('icestate', 'assets/blue_ball.png');
+	// Lightning state
+	game.load.image('lightningstate', 'assets/purple_ball.png');
 }
 
 // Player sprite .
@@ -60,8 +66,10 @@ var score = 0;
 var scoreString = '';
 // Score text, which equals ("Score: %d", score)
 var scoreText;
+// Lives sprite
+var ship;
 // Lives player have.
-var lives;
+var lives=3;
 // Enemy's bullet sprite.
 var enemyBullet;
 // Enemy's bullet group.
@@ -80,6 +88,8 @@ var ufo;
 var ufoTimer = 29000;
 // Powerful bullte sprite.
 var powerfulBullet;
+// Player state
+var playerState = 0;
 
 // Create function, don't remove.
 function create() {
@@ -149,7 +159,7 @@ function create() {
 	});
 
 	// Lives
-	lives = game.add.group();
+	
 	game.add.text(game.world.width - 100, 10, 'Lives : ', {
 		font : '34px Arial',
 		fill : '#fff'
@@ -164,13 +174,20 @@ function create() {
 	stateText.visible = false;
 
 	// Show player's lives.
-	for (var i = 0; i < 3; i++) {
-		var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'ship');
+//	for (var i = 0; i < 3; i++) {
+//		var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'ship');
+		ship = game.add.sprite(700, 80, 'ship');
 		ship.anchor.setTo(0.5, 0.5);
 		// Rotate 90 degree
-		ship.angle = 90;
-		ship.alpha = 0.4;
-	}
+//		ship.angle = 90;
+//		ship.alpha = 0.4;
+		// Sclae the ship
+//		lives.scale.set(0.5);
+		game.add.text(game.world.width - 70, 60, 'X0'+lives, {
+			font : '34px Arial',
+			fill : '#fff'
+		});
+//	}
 
 	// An explosion pool
 	explosions = game.add.group();
@@ -188,20 +205,16 @@ function createAliens() {
 	aliens.x = 10;
 	aliens.y = 10;
 	for (var i = 0; i < 10; i++) {
-		var alien = aliens.create(80*i + 32*Math.random() + Math.random()*48,
-				10, 'invader');
+		var alien = aliens.create(80 * i + 32 * Math.random() + Math.random()
+				* 48, 10, 'invader');
 		alien.anchor.setTo(0.5, 0.5);
 		alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
 		alien.play('fly');
 		alien.body.moves = false;
-		// game.add.tween(alien).to({
-		// y : 550 - alien.body.y
-		// }, 1000 + Math.random() * 3000, Phaser.Easing.Linear.None, true, 0,
-		// 1000, true);
-		// game.add.tween(alien).to({
-		// x : 750 - alien.body.x
-		// }, 1000 + Math.random() * 3000, Phaser.Easing.Linear.None, true, 0,
-		// 1000, true);
+		game.add.tween(alien).to({y : 550 }, 1000 + Math.random() * 3000, 
+				Phaser.Easing.Linear.None, true, 0, 1000, true);
+		game.add.tween(alien).to({x : 800 - alien.body.x}, 1000 + Math.random() * 3000, 
+				Phaser.Easing.Linear.None, true, 0,1000, true);
 	}
 	alienTimer = game.time.now + 10000;
 }
@@ -374,16 +387,13 @@ function enemyHitsPlayer(player, bullet) {
 	bullet.kill();
 	// Set player's bulletLv to 1
 	bulletLV = 1;
-	live = lives.getFirstAlive();
-	if (live) {
-		live.kill();
-	}
+	lives -= 1;
 	// And create an explosion :)
 	var explosion = explosions.getFirstExists(false);
 	explosion.reset(player.body.x, player.body.y);
 	explosion.play('kaboom', 30, false, true);
 	// When the player dies
-	if (lives.countLiving() < 1) {
+	if (lives < 1) {
 		player.kill();
 		enemyBullets.callAll('kill');
 		stateText.text = " GAME OVER \n Click to restart";
@@ -489,8 +499,8 @@ function restart() {
 	scoreText.text = scoreString + score;
 }
 // Render function, don't remove.
-//function render() {
-//	for (var i = 0; i < aliens.length; i++) {
-//		game.debug.body(aliens.children[i]);
-//	}
+// function render() {
+// for (var i = 0; i < aliens.length; i++) {
+// game.debug.body(aliens.children[i]);
+// }
 //}
