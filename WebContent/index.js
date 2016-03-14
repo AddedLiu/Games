@@ -1,13 +1,13 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 
 var PhaserGame = function() {
-
+	// Background
 	this.background = null;
 	// Player sprite
 	this.player = null;
 
-	// Aliens group.
-	this.aliens = null;
+	// Enemy group.
+	this.enemy = null;
 	this.speed = 300;
 
 	// weapons
@@ -25,8 +25,7 @@ var PhaserGame = function() {
 	this.scoreText;
 	this.score = 0;
 
-	// Boss state
-	this.bossHP = 200;
+	// Boss sprite
 	this.boss;
 
 	// Explosions sprite, which play the kaboom animation.
@@ -36,6 +35,9 @@ var PhaserGame = function() {
 	this.ufo;
 	// Ufo tiomer, ufo refresh time
 	this.ufoTimer = 29000;
+
+	// Update timer
+	this.updateTime = 30000;
 
 	// Lives text, which equals ("X0%d", lives)
 	this.livesString = '';
@@ -71,12 +73,20 @@ PhaserGame.prototype = {
 		this.background = this.add.tileSprite(0, 0, this.game.width,
 				this.game.height, 'background');
 		this.background.autoScroll(0, 40);
-
+		// Weapon
 		this.weapon1 = new Weapon.SingleBullet(this.game);
 		this.weapon3 = new Weapon.Rockets(this.game);
 		this.weapon2 = new Weapon.ScaleBullet(this.game);
 		this.enemyWeapon = new Weapon.EnemyBullet(this.game);
 
+		// Enemy group
+		this.enemy = this.game.add.group();
+		this.enemy.enableBody = true;
+		this.enemy.physicsBodyType = Phaser.Physics.ARCADE;
+		// this.enemy.x = 0;
+		// this.enemy.y = 100;
+
+		// Player
 		this.player = new Player(this.game);
 		// And some controls to play the game with
 		this.cursors = this.input.keyboard.createCursorKeys();
@@ -107,19 +117,16 @@ PhaserGame.prototype = {
 					font : '34px Arial',
 					fill : '#fff'
 				});
-
+		// Alien
+		this.createAlien(3);
 		// Boss
-		this.createBoss();
+		// this.createBoss(200);
 
 	},
 
 	fireBullet : function() {
-		if (this.player.bulletLV === 1)
-			this.weapon1.fire(this.player);
-		else if (this.player.bulletLV === 2)
-			this.weapon2.fire(this.player);
-		else if (this.player.bulletLV === 3)
-			this.weapon3.fire(this.player);
+
+		this.weapon1.fire(this.player);
 
 	},
 	fireRocket : function() {
@@ -135,7 +142,7 @@ PhaserGame.prototype = {
 	},
 
 	// Create boss if it must be.
-createBoss : function() {
+	createBoss : function(HP) {
 		this.boss = this.game.add.sprite(0, 0, 'boss');
 		this.boss.anchor.setTo(0, 0);
 		this.game.physics.enable(this.boss, Phaser.Physics.ARCADE);
@@ -145,6 +152,14 @@ createBoss : function() {
 		this.boss.timer = 0;
 		this.boss.bulletSpeed = 400;
 		this.boss.rate = 200;
+		this.boss.HP = HP;
+	},
+
+	createAlien : function(HP) {
+		var i = 0;
+		for (i; i < 10; i++) {
+			this.enemy.add(new Alien(this.game, HP, i));
+		}
 	},
 
 	update : function() {
@@ -179,19 +194,33 @@ createBoss : function() {
 						&& game.time.now > this.weapon3.timer)
 					this.fireSpreadShot();
 			}
-			if (this.game.time.now > this.boss.timer) {
-				this.enemyfire(this.boss);
-			}
 
 			if (this.ufo) {
 				this.game.physics.arcade.overlap(this.weapon1, this.ufo,
 						this.collisionHandlerUfo, null, this);
 			}
+			if (this.boss) {
+				if (game.time.now > this.boss.timer) {
+					this.enemyFire(this.boss);
+				}
+				this.game.physics.arcade.overlap(this.weapon1, this.boss,
+						this.hitEnemy, null, this);
+			}
+			if (this.enemy.countLiving() > 0) {
+				this.enemy.forEachAlive(function(alien) {
+					alien.move(this.game);
+					if (game.time.now > alien.timer) {
+//						this.enemyFire(alien);
+					}
+				});
+				this.game.physics.arcade.overlap(this.enemy, this.weapon1,
+						this.hitEnemy, null, this);
+			}
 		}
 	},
-	enemyfire : function(source) {
-
-		this.enemyWeapon.fire(source);
+	enemyFire : function(source) {
+		if (source.alive)
+			this.enemyWeapon.fire(source);
 
 	},
 
@@ -227,6 +256,18 @@ createBoss : function() {
 		// }
 
 	},
+	hitEnemy : function(enemy, bullet) {
+
+		enemy.HP -= bullet.damage;
+		if (enemy.HP === 0)
+			enemy.kill();
+		this.setScore(bullet.score);
+
+		var explosion = this.explosions.getFirstExists(false);
+		explosion.reset(bullet.body.x, enemy.body.y + enemy.body.height);
+		explosion.play('kaboom', 30, false, true);
+		bullet.kill();
+	},
 
 	// Setting kaboom animation
 	setupInvader : function(invader) {
@@ -260,7 +301,7 @@ var Player = function(game) {
 	// Player's live
 	this.lives = 3;
 	// Player's weapon
-	this.bulletLV = 2;
+	this.bulletLV = 1;
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -283,18 +324,49 @@ Player.prototype.setLives = function(live) {
 		this.kill();
 };
 
+// Class alien
+var Alien = function(game, HP, index) {
+	Phaser.Sprite.call(this, game, 80 * index + 32 * Math.random()
+			+ Math.random() * 48, 20, 'invader');
+	this.anchor.set(0.5);
+	game.physics.enable(this, Phaser.Physics.ARCADE);
+	// Alien's HP
+	this.HP = HP;
+	this.timer = 0;
+	this.bulletSpeed = 200;
+	this.rate = 500;
+
+	this.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
+	this.play('fly');
+	this.body.velocity.set(48 + Math.random() * 48, 50 + Math.random() * 50);
+};
+
+Alien.prototype = Object.create(Phaser.Sprite.prototype);
+Alien.prototype.constructor = Alien;
+
+Alien.prototype.move = function(game) {
+	if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
+		this.body.velocity.x = -this.body.velocity.x;
+	}
+	if (this.body.y >= game.world.height - this.body.height || this.body.y <= 0) {
+		this.body.velocity.y = -this.body.velocity.y;
+	}
+};
+
 // Class Bullet
-var Bullet = function(game, key) {
+var Bullet = function(game, weapon, key) {
 
 	Phaser.Sprite.call(this, game, 0, 0, key);
 
 	this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
-
 	this.anchor.set(0.5);
 
 	this.checkWorldBounds = true;
 	this.outOfBoundsKill = true;
 	this.exists = false;
+
+	this.damage = weapon.damage;
+	this.score = weapon.score;
 
 	this.tracking = false;
 	this.scaleSpeed = 0;
@@ -349,9 +421,11 @@ Weapon.SingleBullet = function(game) {
 	this.bulletSpeed = -400;
 	this.fireRate = 100;
 	this.timer = 0;
+	this.damage = 1;
+	this.score = 20;
 
 	for (var i = 0; i < 64; i++) {
-		this.add(new Bullet(game, 'bullet2'), true);
+		this.add(new Bullet(game, this, 'bullet2'), true);
 	}
 
 	return this;
@@ -382,9 +456,11 @@ Weapon.Rockets = function(game) {
 
 	this.bulletSpeed = -400;
 	this.timer = 0;
+	this.damage = 2;
+	this.score = 40;
 
 	for (var i = 0; i < 32; i++) {
-		this.add(new Bullet(game, 'bullet10'), true);
+		this.add(new Bullet(game, this, 'bullet10'), true);
 	}
 	return this;
 
@@ -413,9 +489,11 @@ Weapon.ScaleBullet = function(game) {
 
 	this.bulletSpeed = -400;
 	this.timer = 0;
+	this.damage = 4;
+	this.score = 80;
 
 	for (var i = 0; i < 32; i++) {
-		this.add(new Bullet(game, 'bullet9'), true);
+		this.add(new Bullet(game, this, 'bullet9'), true);
 	}
 	return this;
 
@@ -439,7 +517,7 @@ Weapon.EnemyBullet = function(game) {
 			Phaser.Physics.ARCADE);
 
 	for (var i = 0; i < 64; i++) {
-		this.add(new Bullet(game, 'enemyBullet'), true);
+		this.add(new Bullet(game, this, 'enemyBullet'), true);
 	}
 	return this;
 };
@@ -447,7 +525,7 @@ Weapon.EnemyBullet.prototype = Object.create(Phaser.Group.prototype);
 Weapon.EnemyBullet.prototype.constructor = Weapon.EnemyBullet;
 
 Weapon.EnemyBullet.prototype.fire = function(source) {
-	var x = source.body.x + source.body.width/2;
+	var x = source.body.x + source.body.width / 2;
 	var y = source.body.y + source.body.height;
 
 	this.getFirstExists(false).fire(x, y, 0, source.bulletSpeed, 0, 0);
