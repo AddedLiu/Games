@@ -5,9 +5,12 @@ var Player = function (game) {
     this.body.collideWorldBounds = true;
     game.add.existing(this);
     // Player's live
-    this.lives = 3;
+    this.lives = 9;
     // Player's weapon
-    this.bulletLV = 1;
+    this.bulletLV = 3;
+    // Player state
+    this.unbeatable = false;
+    this.unbeatableTimer;
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -22,10 +25,25 @@ Player.prototype.getDamage = function () {
         return 4;
 };
 
+Player.prototype.becomeUnbeatable = function(){
+	this.unbeatable = true;
+	this.unbeatableTimer = game.time.now + 1500;
+	this.alpha = 0.4;
+};
+
+Player.prototype.recover = function() {
+	this.unbeatable = false;
+	this.alpha = 1;
+};
+
 Player.prototype.setLives = function (live) {
     this.lives += live;
     if (this.lives > 9)
         this.lives = 9;
     else if (this.lives < 1)
         this.kill();
+};
+
+Player.prototype.getOneup = function() {
+	this.setLives(1);
 };
