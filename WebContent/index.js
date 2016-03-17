@@ -25,15 +25,18 @@ var PhaserGame = function() {
 	this.score = 0;
 
 	// Boss sprite
-	this.boss;
+	this.boss = null;
 
 	// Explosions sprite, which play the kaboom animation.
-	this.explosions;
+	this.explosions = null;
 
 	// Ufo sprite.
-	this.ufo;
+	this.ufo = null;
+
+	// Award
+	this.award1 = null;
 	// Ufo tiomer, ufo refresh time
-	this.ufoTimer = 29000;
+	this.ufoTimer = 2900;
 
 	// Update timer
 	this.updateTimer = 30000;
@@ -62,7 +65,7 @@ PhaserGame.prototype = {
 		this.load.spritesheet('invader', 'assets/invader32x32x4.png', 32, 32);
 		this.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
 		this.load.image('boss', 'assets/boss1.png');
-		this.game.load.image('ufo', 'assets/ufo.png');
+		this.load.image('ufo', 'assets/ufo.png');
 		this.load.image('enemyBullet', 'assets/enemy-bullet.png');
 		this.load.image('bulletUP', 'assets/aqua_ball.png');
 
@@ -118,7 +121,7 @@ PhaserGame.prototype = {
 					fill : '#fff'
 				});
 		// Alien
-		//		this.createAlien(3);
+		// this.createAlien(3);
 		this.createBoss(200);
 
 	},
@@ -246,10 +249,12 @@ PhaserGame.prototype = {
 			}
 			if (game.time.now > this.updateTimer) {
 				if (game.time.now < 91000)
-					this.createAlien(3);
+					console.log(1);
+				// this.createAlien(3);
 				else if (game.time.now > 91000 && (!this.boss))
 					this.createBoss(200);
 			}
+
 		}
 	},
 	enemyFire : function(source) {
@@ -280,23 +285,24 @@ PhaserGame.prototype = {
 		var explosion = this.explosions.getFirstExists(false);
 		explosion.reset(ufo.body.x, ufo.body.y);
 		explosion.play('kaboom', 30, false, true);
-		list = parseInt((Math.random() * 10)) % 2;
-		switch (list) {
-		case 0:
-			createPowerfulBuller();
-			break;
-		case 1:
-			this.OneUP();
-			break;
-		case 2:
-			changeToIceState();
-			break;
-		case 3:
-			changeToLightningState();
-			break;
-		case 4:
-			changeToFireState();
-		}
+		// list = parseInt((Math.random() * 10)) % 1;
+		// var list = 0;
+		// switch (list) {
+		// case 0:
+		this.award1 = new Award.BulletUP(this.game, ufo);
+		// break;
+		// case 1:
+		// this.OneUP();
+		// break;
+		// case 2:
+		// changeToIceState();
+		// break;
+		// case 3:
+		// changeToLightningState();
+		// break;
+		// case 4:
+		// changeToFireState();
+		// }
 
 	},
 	hitEnemy : function(enemy, bullet) {
@@ -325,7 +331,7 @@ PhaserGame.prototype = {
 		this.ufo.anchor.setTo(0, 0);
 		this.game.physics.enable(this.ufo, Phaser.Physics.ARCADE);
 		this.game.physics.arcade.moveToObject(this.ufo, this.player, 240);
-		this.ufoTimer = game.time.now + 30000;
+		this.ufoTimer = game.time.now + 3000;
 		this.updateTimer = game.time.now + 5000;
 	},
 	// Set Score

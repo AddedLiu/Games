@@ -47,3 +47,11 @@ Player.prototype.setLives = function (live) {
 Player.prototype.getOneup = function() {
 	this.setLives(1);
 };
+
+Player.prototype.setBulletLV = function(lv) {
+	this.bulletLV += lv;
+	if(this.bulletLV > 3)
+		this.bulletLV = 3;
+	else if(this.bulletLV <= 0)
+		this.bulletLV = 1;
+};
