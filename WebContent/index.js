@@ -35,6 +35,7 @@ var PhaserGame = function() {
 
 	// Award
 	this.award1 = null;
+	this.award2 = null;
 	// Ufo tiomer, ufo refresh time
 	this.ufoTimer = 2900;
 
@@ -148,14 +149,21 @@ PhaserGame.prototype = {
 		this.boss = this.game.add.sprite(0, 0, 'boss');
 		this.boss.anchor.setTo(0, 0);
 		this.game.physics.enable(this.boss, Phaser.Physics.ARCADE);
-		this.game.add.tween(this.boss).to({
-			x : 468
-		}, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 		this.boss.timer = 0;
 		this.boss.bulletSpeed = 400;
 		this.boss.rate = 200;
 		this.boss.HP = HP;
+		this.boss.body.velocity.setTo(180, 0);
 		this.boss.UpdateTimer = 270000;
+	},
+
+	bossMove : function() {
+		if (this.boss.body.x >= this.game.world.width - this.boss.body.width
+				|| this.boss.body.x <= 0)
+			this.boss.body.velocity.x = -this.boss.body.velocity.x;
+		if (this.boss.body.y >= this.game.world.height - this.boss.body.height
+				|| this.boss.body.y <= 0)
+			this.boss.body.velocity.y = -this.boss.body.velocity.y;
 	},
 
 	createAlien : function(HP) {
@@ -205,6 +213,11 @@ PhaserGame.prototype = {
 				this.player.recover();
 
 			if (this.ufo) {
+				if (!this.player.unbeatable)
+					this.game.physics.arcade.overlap(this.player, this.ufo,
+							this.collide, null, this);
+				else if (game.time.now > this.player.unbeatableTimer)
+					this.player.recover();
 				this.game.physics.arcade.overlap(this.weapon1, this.ufo,
 						this.collisionHandlerUfo, null, this);
 				this.game.physics.arcade.overlap(this.weapon2, this.ufo,
@@ -213,6 +226,7 @@ PhaserGame.prototype = {
 						this.collisionHandlerUfo, null, this);
 			}
 			if (this.boss) {
+				this.bossMove();
 				if (game.time.now > this.boss.timer) {
 					this.enemyFire(this.boss);
 				}
@@ -255,7 +269,20 @@ PhaserGame.prototype = {
 					this.createBoss(200);
 			}
 
-		}
+			if (this.award1) {
+				this.award1.move(this.game);
+				this.game.physics.arcade.overlap(this.player, this.award1,
+						this.collideaward1, null, this);
+			}
+
+			if (this.award2) {
+				this.award2.move(this.game);
+				this.game.physics.arcade.overlap(this.player, this.award2,
+						this.collideaward2, null, this);
+			}
+
+		} else
+			this.game.physics.arcade.isPaused = true;
 	},
 	enemyFire : function(source) {
 		if (source.alive)
@@ -275,7 +302,7 @@ PhaserGame.prototype = {
 		explosion.play('kaboom', 30, false, true);
 	},
 
-	collisionHandlerUfo : function(bullet, ufo) {
+	collisionHandlerUfo : function(ufo, bullet) {
 		ufo.kill();
 		bullet.kill();
 		// Increase the score
@@ -285,24 +312,28 @@ PhaserGame.prototype = {
 		var explosion = this.explosions.getFirstExists(false);
 		explosion.reset(ufo.body.x, ufo.body.y);
 		explosion.play('kaboom', 30, false, true);
-		// list = parseInt((Math.random() * 10)) % 1;
-		// var list = 0;
-		// switch (list) {
-		// case 0:
-		this.award1 = new Award.BulletUP(this.game, ufo);
-		// break;
-		// case 1:
-		// this.OneUP();
-		// break;
-		// case 2:
-		// changeToIceState();
-		// break;
-		// case 3:
-		// changeToLightningState();
-		// break;
-		// case 4:
-		// changeToFireState();
-		// }
+		list = parseInt((Math.random() * 10)) % 1;
+		var list = parseInt(Math.random()*10)%2;
+		switch (list) {
+		case 0:
+			if(this.award1)
+				this.award1.kill();
+			this.award1 = new Award.BulletUP(this.game, ufo);
+			break;
+		case 1:
+			if(this.award2)
+				this.award2.kill();
+			this.award2 = new Award.OneUP(this.game, ufo);
+			break;
+		case 2:
+			changeToIceState();
+			break;
+		case 3:
+			changeToLightningState();
+			break;
+		case 4:
+			changeToFireState();
+		}
 
 	},
 	hitEnemy : function(enemy, bullet) {
@@ -313,8 +344,7 @@ PhaserGame.prototype = {
 		this.showScore(bullet.score);
 
 		var explosion = this.explosions.getFirstExists(false);
-		explosion.reset(enemy.body.x + enemy.body.width / 2, enemy.body.y
-				+ enemy.body.height);
+		explosion.reset(bullet.body.x, enemy.body.y + enemy.body.height);
 		explosion.play('kaboom', 30, false, true);
 		bullet.kill();
 	},
@@ -353,6 +383,20 @@ PhaserGame.prototype = {
 		var explosion = this.explosions.getFirstExists(false);
 		explosion.reset(player.body.x, player.body.y);
 		explosion.play('kaboom', 30, false, true);
+	},
+
+	collideaward1 : function(player, award) {
+		var score = 1000;
+		this.showScore(score);
+		award.getBulletUP(player);
+		award.kill();
+	},
+	collideaward2 : function(player, award) {
+		var score = 100;
+		this.showScore(score);
+		player.getOneup();
+		award.kill();
+		this.showLives();
 	},
 
 };

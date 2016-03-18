@@ -7,24 +7,23 @@ Award.BulletUP = function (game, sprite) {
     game.physics.arcade.enable(this);
     game.add.existing(this);
     
-//    this.body.velocity.setTo(0, 0);
-//    return this;
+    this.body.velocity.setTo(48, 50);
 
 };
 
 Award.BulletUP.prototype = Object.create(Phaser.Sprite.prototype);
 Award.BulletUP.prototype.constructor = Award.BulletUP;
 
-//Award.BulletUP.prototype.update = function (game) {
-//
-//	if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
-//        this.body.velocity.x = -this.body.velocity.x;
-//    }
-//    if (this.body.y >= game.world.height - this.body.height || this.body.y <= 0) {
-//        this.body.velocity.y = -this.body.velocity.y;
-//    }
+Award.BulletUP.prototype.move = function (game) {
 
-//};
+	if (this.body.x >= game.world.width - this.body.width + 10 || this.body.x <= -10) {
+        this.body.velocity.x = -this.body.velocity.x;
+    }
+    if (this.body.y >= game.world.height - this.body.height + 10 || this.body.y <= -10) {
+        this.body.velocity.y = -this.body.velocity.y;
+    }
+
+};
 
 Award.BulletUP.prototype.getBulletUP = function(player) {
 	this.kill();
@@ -32,28 +31,31 @@ Award.BulletUP.prototype.getBulletUP = function(player) {
 	
 };
 
-//Award.OneUP = function (game) {
-//
-//	Phaser.sprite.call(this, game, game.ufo.body.x, 
-//    		game.ufo.body.y, 'player');
-//	this.scale.set(0.75);
-//	this.anchor.setTo(0, 0);
-//	game.physics.enable(this, Phaser.Physics.ARCADE);
-//    return this;
-//
-//};
-//
-//Award.OneUP.prototype = Object.create(Phaser.Sprite.prototype);
-//Award.OneUP.prototype.constructor = Award.OneUP;
-//
-//Award.OneUP.prototype.fire = function (source) {
-//
-//    var x = source.x;
-//    var y = source.y - 8;
-//
-//    this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
-//    this.timer = game.time.now + 200;
-//};
+Award.OneUP = function (game, sprite) {
+
+	Phaser.Sprite.call(this, game, sprite.body.x, sprite.body.y, 'player');
+	this.scale.set(0.75);
+	this.anchor.setTo(0.5, 0.5);
+	game.physics.enable(this, Phaser.Physics.ARCADE);
+	this.body.velocity.setTo(60, 10);
+	game.add.existing(this);
+	return this;
+
+};
+
+Award.OneUP.prototype = Object.create(Phaser.Sprite.prototype);
+Award.OneUP.prototype.constructor = Award.OneUP;
+
+Award.OneUP.prototype.move = function (game) {
+
+	if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
+        this.body.velocity.x = -this.body.velocity.x;
+    }
+    if (this.body.y >= game.world.height - this.body.height || this.body.y <= 0) {
+        this.body.velocity.y = -this.body.velocity.y;
+    }
+
+};
 //
 //// //////////////////////////////////////////////////////////////////////
 //// A single bullet that scales in size as it moves across the screen //

@@ -5,9 +5,9 @@ var Player = function (game) {
     this.body.collideWorldBounds = true;
     game.add.existing(this);
     // Player's live
-    this.lives = 9;
+    this.lives = 3;
     // Player's weapon
-    this.bulletLV = 3;
+    this.bulletLV = 1;
     // Player state
     this.unbeatable = false;
     this.unbeatableTimer;
