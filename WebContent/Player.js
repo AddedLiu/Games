@@ -25,9 +25,9 @@ Player.prototype.getDamage = function () {
         return 4;
 };
 
-Player.prototype.becomeUnbeatable = function(){
+Player.prototype.becomeUnbeatable = function(timer){
 	this.unbeatable = true;
-	this.unbeatableTimer = game.time.now + 1500;
+	this.unbeatableTimer = game.time.now + timer;
 	this.alpha = 0.4;
 };
 
