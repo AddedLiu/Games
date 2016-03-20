@@ -25,12 +25,39 @@ Bullet.prototype.fire = function (x, y, angle, speed, gx, gy) {
 
     this.reset(x, y);
     this.scale.set(1);
-
-    // this.game.physics.arcade
-    // .velocityFromAngle(angle, speed, this.body.velocity);
     this.body.velocity.y = speed;
     this.angle = angle;
 
     this.body.gravity.set(gx, gy);
+
+};
+
+//Class Rocket
+var Rocket = function (game, weapon, key) {
+
+    Phaser.Sprite.call(this, game, 0, 0, key);
+
+    this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
+    this.anchor.set(0.5);
+
+    this.checkWorldBounds = true;
+    this.outOfBoundsKill = false;
+    this.exists = false;
+    this.timer = 0;
+    this.damage = weapon.damage;
+    this.score = weapon.score;
+
+};
+
+Rocket.prototype = Object.create(Phaser.Sprite.prototype);
+Rocket.prototype.constructor = Rocket;
+
+Rocket.prototype.fire = function (game, x, y, angle, speed, source, target) {
+
+    this.reset(x, y);
+    this.scale.set(1);
+    this.speed = speed;
+    this.rotation = game.physics.arcade.angleBetween(source, target);
+    game.physics.arcade.moveToObject(this, target, this.speed);
 
 };

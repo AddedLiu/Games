@@ -1,5 +1,7 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 
+var PI = 3.14;
+
 var PhaserGame = function() {
 	// Background
 	this.background = null;
@@ -9,11 +11,15 @@ var PhaserGame = function() {
 	// Enemy group.
 	this.enemy = null;
 
+	// Enemy Rockets group
+	this.enemyRockets = null;
+
 	// weapons
 	this.weapon1;
 	this.weapon2;
 	this.weapon3;
 	this.enemyWeapon;
+	this.bossWeapon;
 
 	// Some controls to play the game with
 	this.cursors;
@@ -61,9 +67,9 @@ PhaserGame.prototype = {
 	preload : function() {
 		this.load.image('background', 'assets/starfield.jpg');
 		this.load.image('player', 'assets/thrust_ship2.png');
-		this.load.image('bullet2', 'assets/bullet0.png');
-		this.load.image('bullet9', 'assets/bullet1.png');
-		this.load.image('bullet10', 'assets/bullet2.png');
+		this.load.image('bullet1', 'assets/bullet0.png');
+		this.load.image('bullet2', 'assets/bullet1.png');
+		this.load.image('bullet3', 'assets/bullet2.png');
 		this.load.spritesheet('invader', 'assets/invader32x32x4.png', 32, 32);
 		this.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
 		this.load.image('boss', 'assets/boss1.png');
@@ -71,6 +77,7 @@ PhaserGame.prototype = {
 		this.load.image('enemyBullet', 'assets/enemy-bullet.png');
 		this.load.image('bulletUP', 'assets/aqua_ball.png');
 		this.load.image('unbeatable', 'assets/red_ball.png');
+		this.load.image('bullet10', 'assets/bullet10.png');
 
 	},
 
@@ -80,15 +87,20 @@ PhaserGame.prototype = {
 				this.game.height, 'background');
 		this.background.autoScroll(0, 40);
 		// Weapon
-		this.weapon1 = new Weapon.SingleBullet(this.game);
-		this.weapon3 = new Weapon.Rockets(this.game);
-		this.weapon2 = new Weapon.ScaleBullet(this.game);
+		this.weapon1 = new Weapon.BulletOne(this.game);
+		this.weapon3 = new Weapon.BulletTwo(this.game);
+		this.weapon2 = new Weapon.BulletThree(this.game);
 		this.enemyWeapon = new Weapon.EnemyBullet(this.game);
+		this.bossWeapon = new Weapon.BossRockets(this.game);
 
 		// Enemy group
 		this.enemy = this.game.add.group();
 		this.enemy.enableBody = true;
 		this.enemy.physicsBodyType = Phaser.Physics.ARCADE;
+
+		this.enemyRockets = this.game.add.group();
+		this.enemyRockets.enableBody = true;
+		this.enemyRockets.physicsBodyType = Phaser.Physics.ARCADE;
 		// this.enemy.x = 0;
 		// this.enemy.y = 100;
 
@@ -124,8 +136,8 @@ PhaserGame.prototype = {
 					fill : '#fff'
 				});
 		// Alien
-		this.createAlien(3);
-		// this.createBoss(200);
+		// this.createAlien(3);
+		this.createBoss(200);
 
 	},
 
@@ -152,6 +164,7 @@ PhaserGame.prototype = {
 		this.boss.anchor.setTo(0, 0);
 		this.game.physics.enable(this.boss, Phaser.Physics.ARCADE);
 		this.boss.timer = 0;
+		this.boss.rocketTimer = 0;
 		this.boss.bulletSpeed = 400;
 		this.boss.rate = 200;
 		this.boss.HP = HP;
@@ -235,6 +248,9 @@ PhaserGame.prototype = {
 					if (game.time.now > this.boss.timer) {
 						this.enemyFire(this.boss);
 					}
+					if (game.time.now > this.boss.rocketTimer) {
+						this.bossFire(this.boss);
+					}
 					if (!this.player.unbeatable)
 						this.game.physics.arcade.overlap(this.player,
 								this.boss, this.collide, null, this);
@@ -297,12 +313,41 @@ PhaserGame.prototype = {
 						this.collideaward3, null, this);
 			}
 
+			if (this.enemyRockets.countLiving() > 0) {
+				this.enemyRockets.forEachAlive(function(rocket) {
+					if (this.game.time.now > rocket.timer) {
+						rocket.rotation = this.game.physics.arcade
+								.angleBetween(rocket, this.player);
+						this.game.physics.arcade.moveToObject(rocket,
+								this.player, rocket.speed);
+						if( 240 < rocket.rotation < 330)
+							this.game.physics.arcade.velocityFromRotation(rocket.rotation, rocket.speed,
+									rocket.body.velocity);
+						else if(90 < rocket.rotation < 240)
+							this.game.physics.arcade.velocityFromRotation(240, rocket.speed,
+									rocket.body.velocity);
+						else
+							this.game.physics.arcade.velocityFromRotation(330, rocket.speed,
+									rocket.body.velocity);
+//						this.game.physics.arcade.velocityFromRotation(0.5, rocket.speed,
+//								rocket.body.velocity);
+						rocket.timer = this.game.time.now + 200;
+					}
+				}, this);
+			}
+
 		} else
 			this.game.physics.arcade.isPaused = true;
 	},
 	enemyFire : function(source) {
 		if (source.alive)
 			this.enemyWeapon.fire(source);
+	},
+	bossFire : function(source) {
+		if (source.alive) {
+			var rocket = this.bossWeapon.fire(this.game, source, this.player);
+			this.enemyRockets.add(rocket, false);
+		}
 
 	},
 	enemyHit : function(player, bullet) {
