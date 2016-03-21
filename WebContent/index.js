@@ -243,10 +243,10 @@ PhaserGame.prototype = {
 					}, this);
 				}
 				this.getTarget();
-				this.game.physics.arcade.overlap(this.playerRockets, this.enemyRockets,
-						this.rVSr, null, this);
-				this.game.physics.arcade.overlap(this.playerRockets, this.enemy,
-						this.hitEnemy, null, this);
+				this.game.physics.arcade.overlap(this.playerRockets,
+						this.enemyRockets, this.rVSr, null, this);
+				this.game.physics.arcade.overlap(this.playerRockets,
+						this.enemy, this.hitEnemy, null, this);
 				this.game.physics.arcade.overlap(this.playerRockets, this.ufo,
 						this.collisionHandlerUfo, null, this);
 				this.game.physics.arcade.overlap(this.playerRockets, this.boss,
@@ -453,8 +453,8 @@ PhaserGame.prototype = {
 		explosion.play('kaboom', 30, false, true);
 		bullet.kill();
 	},
-	
-	rVSr:function(pr, er) {
+
+	rVSr : function(pr, er) {
 		pr.kill();
 		er.kill();
 		this.showScore(20);
@@ -533,6 +533,11 @@ PhaserGame.prototype = {
 				} else {
 					rocket.target = null;
 				}
+			} else {
+				rocket.rotation = this.game.physics.arcade.angleBetween(rocket,
+						rocket.target);
+				this.game.physics.arcade.velocityFromRotation(rocket.rotation,
+						rocket.speed, rocket.body.velocity);
 			}
 		}, this);
 
