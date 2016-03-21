@@ -1,7 +1,5 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 
-var PI = 3.14;
-
 var PhaserGame = function() {
 	// Background
 	this.background = null;
@@ -11,13 +9,16 @@ var PhaserGame = function() {
 	// Enemy group.
 	this.enemy = null;
 
-	// Enemy Rockets group
+	// Enemy Rocket's group
 	this.enemyRockets = null;
+	// Player Rocket's group
+	this.playerRockets = null;
 
 	// weapons
 	this.weapon1;
 	this.weapon2;
 	this.weapon3;
+	this.playerWeapon;
 	this.enemyWeapon;
 	this.bossWeapon;
 
@@ -90,6 +91,7 @@ PhaserGame.prototype = {
 		this.weapon1 = new Weapon.BulletOne(this.game);
 		this.weapon3 = new Weapon.BulletTwo(this.game);
 		this.weapon2 = new Weapon.BulletThree(this.game);
+		this.playerWeapon = new Weapon.PR(this.game);
 		this.enemyWeapon = new Weapon.EnemyBullet(this.game);
 		this.bossWeapon = new Weapon.BossRockets(this.game);
 
@@ -101,8 +103,10 @@ PhaserGame.prototype = {
 		this.enemyRockets = this.game.add.group();
 		this.enemyRockets.enableBody = true;
 		this.enemyRockets.physicsBodyType = Phaser.Physics.ARCADE;
-		// this.enemy.x = 0;
-		// this.enemy.y = 100;
+
+		this.playerRockets = this.game.add.group();
+		this.playerRockets.enableBody = true;
+		this.playerRockets.physicsBodyType = Phaser.Physics.ARCADE;
 
 		// Player
 		this.player = new Player(this.game);
@@ -209,7 +213,7 @@ PhaserGame.prototype = {
 			if (game.time.now > this.ufoTimer) {
 				this.createUfo();
 			}
-
+			// Control-able fire
 			if (this.fireButton.isDown) {
 				if (this.player.bulletLV === 1
 						&& game.time.now > this.weapon1.timer)
@@ -221,6 +225,34 @@ PhaserGame.prototype = {
 						&& game.time.now > this.weapon3.timer)
 					this.fireSpreadShot();
 			}
+			// Auto-fire
+			if (this.player.enableRocket) {
+				if (game.time.now > this.player.rocketTimer) {
+					this.createRocket(this.player);
+					this.getTarget();
+					this.playerRockets.forEachAlive(function(rocket) {
+						if (rocket.target == null)
+							rocket.body.velocity.setTo(0, -rocket.speed);
+						else {
+							rocket.rotation = this.game.physics.arcade
+									.angleBetween(rocket, rocket.target);
+							this.game.physics.arcade.velocityFromRotation(
+									rocket.rotation, rocket.speed,
+									rocket.body.velocity);
+						}
+					}, this);
+				}
+				this.getTarget();
+				this.game.physics.arcade.overlap(this.playerRockets, this.enemyRockets,
+						this.rVSr, null, this);
+				this.game.physics.arcade.overlap(this.playerRockets, this.enemy,
+						this.hitEnemy, null, this);
+				this.game.physics.arcade.overlap(this.playerRockets, this.ufo,
+						this.collisionHandlerUfo, null, this);
+				this.game.physics.arcade.overlap(this.playerRockets, this.boss,
+						this.hitEnemy, null, this);
+			}
+
 			if (!this.player.unbeatable)
 				this.game.physics.arcade.overlap(this.enemyWeapon, this.player,
 						this.enemyHit, null, this);
@@ -318,21 +350,23 @@ PhaserGame.prototype = {
 					if (this.game.time.now > rocket.timer) {
 						rocket.rotation = this.game.physics.arcade
 								.angleBetween(rocket, this.player);
-						this.game.physics.arcade.moveToObject(rocket,
-								this.player, rocket.speed);
-						if( 240 < rocket.rotation < 330)
-							this.game.physics.arcade.velocityFromRotation(rocket.rotation, rocket.speed,
-									rocket.body.velocity);
-						else if(90 < rocket.rotation < 240)
-							this.game.physics.arcade.velocityFromRotation(240, rocket.speed,
-									rocket.body.velocity);
-						else
-							this.game.physics.arcade.velocityFromRotation(330, rocket.speed,
-									rocket.body.velocity);
-//						this.game.physics.arcade.velocityFromRotation(0.5, rocket.speed,
-//								rocket.body.velocity);
-						rocket.timer = this.game.time.now + 200;
+						this.game.physics.arcade.velocityFromRotation(
+								rocket.rotation, rocket.speed,
+								rocket.body.velocity);
+						rocket.timer = this.game.time.now + 100;
 					}
+					if (!this.player.unbeatable)
+						this.game.physics.arcade.overlap(this.player, rocket,
+								this.enemyHit, null, this);
+					else if (game.time.now > this.player.unbeatableTimer)
+						this.player.recover();
+
+					this.game.physics.arcade.overlap(rocket, this.weapon1,
+							this.hitEnemy, null, this);
+					this.game.physics.arcade.overlap(rocket, this.weapon2,
+							this.hitEnemy, null, this);
+					this.game.physics.arcade.overlap(rocket, this.weapon3,
+							this.hitEnemy, null, this);
 				}, this);
 			}
 
@@ -349,6 +383,14 @@ PhaserGame.prototype = {
 			this.enemyRockets.add(rocket, false);
 		}
 
+	},
+	createRocket : function(source) {
+		if (source.alive) {
+			var rocket = new Rocket(this.game, this.playerWeapon, 'bullet10');
+			rocket.reset(source.body.x, source.body.y);
+			this.playerRockets.add(rocket, false);
+			this.player.rocketTimer = this.game.time.now + 5000;
+		}
 	},
 	enemyHit : function(player, bullet) {
 		player.setLives(-1);
@@ -411,6 +453,15 @@ PhaserGame.prototype = {
 		explosion.play('kaboom', 30, false, true);
 		bullet.kill();
 	},
+	
+	rVSr:function(pr, er) {
+		pr.kill();
+		er.kill();
+		this.showScore(20);
+		var explosion = this.explosions.getFirstExists(false);
+		explosion.reset(er.body.x, er.body.y + er.body.height);
+		explosion.play('kaboom', 30, false, true);
+	},
 
 	// Setting kaboom animation
 	setupInvader : function(invader) {
@@ -466,7 +517,26 @@ PhaserGame.prototype = {
 		player.becomeUnbeatable(10000);
 		award.kill();
 	},
+	getTarget : function() {
+		this.playerRockets.forEachAlive(function(rocket) {
+			if (rocket.target == null) {
+				if (this.enemyRockets.countLiving() > 0) {
+					rocket.getTarget(this.enemyRockets);
+				} else if (this.ufo) {
+					if (this.ufo.alive)
+						rocket.target = this.ufo;
+				} else if (this.enemy.countLiving() > 0) {
+					rocket.getTarget(this.enemy);
+				} else if (this.boss) {
+					if (this.boss.alive)
+						rocket.target = this.boss;
+				} else {
+					rocket.target = null;
+				}
+			}
+		}, this);
 
+	},
 };
 
 game.state.add('Game', PhaserGame, true);

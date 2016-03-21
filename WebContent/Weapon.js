@@ -97,7 +97,7 @@ Weapon.PR = function(game) {
 
 	this.bulletSpeed = 600;
 	this.timer = 0;
-	this.damage = 1;
+	this.damage = 2;
 	this.score = 0;
 
 	for (var i = 0; i < 32; i++) {
@@ -109,11 +109,12 @@ Weapon.PR = function(game) {
 Weapon.PR.prototype = Object.create(Phaser.Group.prototype);
 Weapon.PR.prototype.constructor = Weapon.PR;
 
-Weapon.PR.prototype.fire = function (game, source, player) {
+
+Weapon.PR.prototype.fire = function (game, source, target) {
 	var x = source.body.x + source.body.width / 2;
 	var y = source.body.y + source.body.height;
 	var rocket = this.getFirstExists(false);
-	rocket.fire(game, x, y, 90, source.bulletSpeed, source, player);
+	rocket.fire(game, x, y, 90, this.bulletSpeed, source, target);
 	source.rocketTimer = game.time.now + 1000;
 	return rocket;
 };
@@ -149,7 +150,7 @@ Weapon.BossRockets = function(game) {
 	Phaser.Group.call(this, game, game.world, 'Boss Rockets', false, true,
 			Phaser.Physics.ARCADE);
 
-	this.bulletSpeed = 1000;
+	this.bulletSpeed = 150;
 	this.timer = 0;
 	this.damage = 1;
 	this.score = 0;
@@ -168,7 +169,7 @@ Weapon.BossRockets.prototype.fire = function (game, source, target) {
 	var x = source.body.x + source.body.width / 2;
 	var y = source.body.y + source.body.height;
 	var rocket = this.getFirstExists(false);
-	rocket.fire(game, x, y, 90, source.bulletSpeed, source, target);
+	rocket.fire(game, x, y, 90, this.bulletSpeed, source, target);
 	source.rocketTimer = game.time.now + 5000;
 	return rocket;
 };

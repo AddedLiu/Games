@@ -11,6 +11,9 @@ var Player = function (game) {
     // Player state
     this.unbeatable = false;
     this.unbeatableTimer;
+    // Player rocket state
+    this.enableRocket = true;
+    this.rocketTimer = 0;
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);

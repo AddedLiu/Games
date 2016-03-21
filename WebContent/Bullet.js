@@ -39,18 +39,34 @@ var Rocket = function (game, weapon, key) {
 
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
     this.anchor.set(0.5);
-
+    
+    this.speed = 150;
     this.checkWorldBounds = true;
-    this.outOfBoundsKill = false;
+    this.outOfBoundsKill = true;
+    this.HP = 2;
     this.exists = false;
     this.timer = 0;
     this.damage = weapon.damage;
     this.score = weapon.score;
+    
+    this.target = null;
 
 };
 
 Rocket.prototype = Object.create(Phaser.Sprite.prototype);
 Rocket.prototype.constructor = Rocket;
+
+Rocket.prototype.getTarget = function(enemygroup) {
+	var min = 800*800 + 600*600;
+	enemygroup.forEachAlive(function(enemy) {
+		var a = (enemy.body.x - this.body.x)*(enemy.body.x - this.body.x);
+		var b = (enemy.body.y - this.body.y)*(enemy.body.y - this.body.y);
+		if( a+b < min ) {
+			min = a+b;
+			this.target  = enemy;
+		}
+	}, this);
+};
 
 Rocket.prototype.fire = function (game, x, y, angle, speed, source, target) {
 
@@ -59,5 +75,15 @@ Rocket.prototype.fire = function (game, x, y, angle, speed, source, target) {
     this.speed = speed;
     this.rotation = game.physics.arcade.angleBetween(source, target);
     game.physics.arcade.moveToObject(this, target, this.speed);
+
+};
+
+Rocket.prototype.autoFire = function (game, x, y, angle, speed, source) {
+
+    this.reset(x, y);
+    this.scale.set(1);
+    this.speed = speed;
+    this.rotation = game.physics.arcade.angleBetween(source, this.target);
+    game.physics.arcade.moveToObject(this, this.target, this.speed);
 
 };
