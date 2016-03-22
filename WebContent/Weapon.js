@@ -98,7 +98,7 @@ Weapon.PR = function(game) {
 	this.bulletSpeed = 600;
 	this.timer = 0;
 	this.damage = 2;
-	this.score = 0;
+	this.score = 20;
 
 	for (var i = 0; i < 32; i++) {
 		this.add(new Rocket(game, this, 'bullet10'), true);
