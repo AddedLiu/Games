@@ -40,7 +40,7 @@ var Rocket = function (game, weapon, key) {
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
     this.anchor.set(0.5);
     
-    this.speed = 150;
+    this.speed = 350;
     this.checkWorldBounds = true;
     this.outOfBoundsKill = true;
     this.HP = 2;

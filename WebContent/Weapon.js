@@ -150,7 +150,7 @@ Weapon.BossRockets = function(game) {
 	Phaser.Group.call(this, game, game.world, 'Boss Rockets', false, true,
 			Phaser.Physics.ARCADE);
 
-	this.bulletSpeed = 150;
+	this.bulletSpeed = 250;
 	this.timer = 0;
 	this.damage = 1;
 	this.score = 0;
@@ -170,6 +170,6 @@ Weapon.BossRockets.prototype.fire = function (game, source, target) {
 	var y = source.body.y + source.body.height;
 	var rocket = this.getFirstExists(false);
 	rocket.fire(game, x, y, 90, this.bulletSpeed, source, target);
-	source.rocketTimer = game.time.now + 5000;
+	source.rocketTimer = game.time.now + 3000;
 	return rocket;
 };
