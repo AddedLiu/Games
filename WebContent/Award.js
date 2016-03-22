@@ -6,7 +6,7 @@ Award.BulletUP = function (game, sprite) {
     this.anchor.set(0.5);
     game.physics.arcade.enable(this);
     game.add.existing(this);
-    
+
     this.body.velocity.setTo(48, 50);
 
 };
@@ -16,7 +16,7 @@ Award.BulletUP.prototype.constructor = Award.BulletUP;
 
 Award.BulletUP.prototype.move = function (game) {
 
-	if (this.body.x >= game.world.width - this.body.width + 10 || this.body.x <= -10) {
+    if (this.body.x >= game.world.width - this.body.width + 10 || this.body.x <= -10) {
         this.body.velocity.x = -this.body.velocity.x;
     }
     if (this.body.y >= game.world.height - this.body.height + 10 || this.body.y <= -10) {
@@ -25,21 +25,21 @@ Award.BulletUP.prototype.move = function (game) {
 
 };
 
-Award.BulletUP.prototype.getBulletUP = function(player) {
-	this.kill();
-	player.setBulletLV(1);
-	
+Award.BulletUP.prototype.getBulletUP = function (player) {
+    this.kill();
+    player.setBulletLV(1);
+
 };
 
 Award.OneUP = function (game, sprite) {
 
-	Phaser.Sprite.call(this, game, sprite.body.x, sprite.body.y, 'player');
-	this.scale.set(0.75);
-	this.anchor.setTo(0.5, 0.5);
-	game.physics.enable(this, Phaser.Physics.ARCADE);
-	this.body.velocity.setTo(60, 10);
-	game.add.existing(this);
-	return this;
+    Phaser.Sprite.call(this, game, sprite.body.x, sprite.body.y, 'player');
+    this.scale.set(0.75);
+    this.anchor.setTo(0.5, 0.5);
+    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.velocity.setTo(60, 10);
+    game.add.existing(this);
+    return this;
 
 };
 
@@ -48,7 +48,7 @@ Award.OneUP.prototype.constructor = Award.OneUP;
 
 Award.OneUP.prototype.move = function (game) {
 
-	if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
+    if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
         this.body.velocity.x = -this.body.velocity.x;
     }
     if (this.body.y >= game.world.height - this.body.height || this.body.y <= 0) {
@@ -59,12 +59,12 @@ Award.OneUP.prototype.move = function (game) {
 
 Award.Unbeatable = function (game, sprite) {
 
-    Phaser.Sprite.call(this, game, sprite.body.x, sprite.body.y, 'unbeatable' );
+    Phaser.Sprite.call(this, game, sprite.body.x, sprite.body.y, 'unbeatable');
 
     this.anchor.set(0.5);
     game.physics.arcade.enable(this);
     game.add.existing(this);
-    
+
     this.body.velocity.setTo(48, 50);
 
 };
@@ -74,7 +74,7 @@ Award.Unbeatable.prototype.constructor = Award.Unbeatable;
 
 Award.Unbeatable.prototype.move = function (game) {
 
-	if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
+    if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
         this.body.velocity.x = -this.body.velocity.x;
     }
     if (this.body.y >= game.world.height - this.body.height || this.body.y <= 0) {

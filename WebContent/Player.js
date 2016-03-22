@@ -28,15 +28,15 @@ Player.prototype.getDamage = function () {
         return 4;
 };
 
-Player.prototype.becomeUnbeatable = function(timer){
-	this.unbeatable = true;
-	this.unbeatableTimer = game.time.now + timer;
-	this.alpha = 0.4;
+Player.prototype.becomeUnbeatable = function (timer) {
+    this.unbeatable = true;
+    this.unbeatableTimer = game.time.now + timer;
+    this.alpha = 0.4;
 };
 
-Player.prototype.recover = function() {
-	this.unbeatable = false;
-	this.alpha = 1;
+Player.prototype.recover = function () {
+    this.unbeatable = false;
+    this.alpha = 1;
 };
 
 Player.prototype.setLives = function (live) {
@@ -47,14 +47,14 @@ Player.prototype.setLives = function (live) {
         this.kill();
 };
 
-Player.prototype.getOneup = function() {
-	this.setLives(1);
+Player.prototype.getOneup = function () {
+    this.setLives(1);
 };
 
-Player.prototype.setBulletLV = function(lv) {
-	this.bulletLV += lv;
-	if(this.bulletLV > 3)
-		this.bulletLV = 3;
-	else if(this.bulletLV <= 0)
-		this.bulletLV = 1;
+Player.prototype.setBulletLV = function (lv) {
+    this.bulletLV += lv;
+    if (this.bulletLV > 3)
+        this.bulletLV = 3;
+    else if (this.bulletLV <= 0)
+        this.bulletLV = 1;
 };

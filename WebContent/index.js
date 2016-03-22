@@ -488,10 +488,10 @@ PhaserGame.prototype = {
         explosion.play('kaboom', 30, false, true);
 
     },
-    rocketHitBoss: function(rocket, boss){
+    rocketHitBoss: function (rocket, boss) {
         rocket.kill();
         boss.HP -= rocket.damage;
-        if(boss.HP <= 0)
+        if (boss.HP <= 0)
             boss.kill();
         this.showScore(rocket.score);
         var explosion = this.explosions.getFirstExists(false);
@@ -499,10 +499,10 @@ PhaserGame.prototype = {
         explosion.play('kaboom', 30, false, true);
         this.boss = null;
     },
-    rocketHitEnemy: function(rocket, enemy){
+    rocketHitEnemy: function (rocket, enemy) {
         rocket.kill();
         enemy.HP -= rocket.damage;
-        if(enemy.HP <= 0)
+        if (enemy.HP <= 0)
             enemy.kill();
         this.showLives(rocket.score);
 
