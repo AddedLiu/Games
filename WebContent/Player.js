@@ -10,9 +10,9 @@ var Player = function (game) {
     this.bulletLV = 1;
     // Player state
     this.unbeatable = false;
-    this.unbeatableTimer;
+    this.unbeatableTimer = 0;
     // Player rocket state
-    this.enableRocket = true;
+    this.enableRocket = false;
     this.rocketTimer = 0;
 };
 

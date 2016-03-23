@@ -1,14 +1,14 @@
 // Class alien
-var Alien = function (game, HP, index) {
+var Alien = function (game, area, index) {
     Phaser.Sprite.call(this, game, 80 * index + 32 * Math.random()
         + Math.random() * 48, 20, 'invader');
     this.anchor.set(0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     // Alien's HP
-    this.HP = HP;
+    this.HP = area;
     this.timer = index * 100;
-    this.bulletSpeed = 200;
-    this.rate = 1000;
+    this.bulletSpeed = 150 + area*50;
+    this.rate = 1500 - area*50;
 
     this.animations.add('fly', [0, 1, 2, 3], 20, true);
     this.play('fly');

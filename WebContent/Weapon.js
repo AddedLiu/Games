@@ -155,7 +155,7 @@ Weapon.BossRockets = function (game) {
     this.damage = 1;
     this.score = 0;
 
-    for (var i = 0; i < 32; i++) {
+    for (var i = 0; i < 3200; i++) {
         this.add(new Rocket(game, this, 'bullet10'), true);
     }
     return this;

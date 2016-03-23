@@ -82,6 +82,31 @@ Award.Unbeatable.prototype.move = function (game) {
     }
 };
 
+
+Award.getRocket = function (game, sprite) {
+
+    Phaser.Sprite.call(this, game, sprite.body.x, sprite.body.y, 'rocket');
+
+    this.anchor.set(0.5);
+    game.physics.arcade.enable(this);
+    game.add.existing(this);
+
+    this.body.velocity.setTo(48, 20);
+
+};
+
+Award.getRocket.prototype = Object.create(Phaser.Sprite.prototype);
+Award.getRocket.prototype.constructor = Award.getRocket;
+
+Award.getRocket.prototype.move = function (game) {
+
+    if (this.body.x >= game.world.width - this.body.width || this.body.x <= 0) {
+        this.body.velocity.x = -this.body.velocity.x;
+    }
+    if (this.body.y >= game.world.height - this.body.height || this.body.y <= 0) {
+        this.body.velocity.y = -this.body.velocity.y;
+    }
+};
 //
 //Award.EnemyBullet = function (game) {
 //    Phaser.Group.call(this, game, game.world, 'Enemy Bullet', false, true,

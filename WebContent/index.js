@@ -31,6 +31,12 @@ var PhaserGame = function () {
     this.scoreText = null;
     this.score = 0;
 
+    // The area
+    this.areaString = 'Area: ';
+    this.areaText = null;
+    this.area = 1;
+    this.areaState = null;
+
     // Boss sprite
     this.boss = null;
 
@@ -44,6 +50,7 @@ var PhaserGame = function () {
     this.award1 = null;
     this.award2 = null;
     this.award3 = null;
+    this.award4 = null;
     // Ufo timer, ufo refresh time
     this.ufoTimer = 29000;
 
@@ -53,6 +60,8 @@ var PhaserGame = function () {
     // Lives text, which equals ("X0%d", lives)
     this.livesString = '';
     this.livesText;
+
+    this.totalEnemy = 50;
 
 };
 
@@ -79,6 +88,7 @@ PhaserGame.prototype = {
         this.load.image('bulletUP', 'assets/aqua_ball.png');
         this.load.image('unbeatable', 'assets/red_ball.png');
         this.load.image('bullet10', 'assets/bullet10.png');
+        this.load.image('rocket', 'assets/purple_ball.png');
 
     },
 
@@ -124,6 +134,11 @@ PhaserGame.prototype = {
             font: '34px Arial',
             fill: '#fff'
         });
+        this.areaText = this.game.add.text(350, 10, this.areaString
+            + this.area, {
+            font: '34px Arial',
+            fill: '#fff'
+        });
         // Lives tag
         this.livesString = 'Lives:';
         this.game.add.text(this.game.world.width - 100, 10, 'Lives : ', {
@@ -140,8 +155,8 @@ PhaserGame.prototype = {
                 fill: '#fff'
             });
         // Alien
-        this.createAlien(3);
-        //this.createBoss(200);
+        this.createAlien(this.area);
+        //this.createBoss();
 
     },
 
@@ -163,15 +178,15 @@ PhaserGame.prototype = {
     },
 
     // Create boss if it must be.
-    createBoss: function (HP) {
-        this.boss = this.game.add.sprite(0, 0, 'boss');
+    createBoss: function () {
+        this.boss = this.game.add.sprite(10, 10, 'boss');
         this.boss.anchor.setTo(0, 0);
         this.game.physics.enable(this.boss, Phaser.Physics.ARCADE);
         this.boss.timer = 0;
         this.boss.rocketTimer = 0;
-        this.boss.bulletSpeed = 400;
-        this.boss.rate = 200;
-        this.boss.HP = HP;
+        this.boss.bulletSpeed = this.area * 120;
+        this.boss.rate = 1200 - this.area * 20;
+        this.boss.HP = this.area * 100;
         this.boss.body.velocity.setTo(180, 0);
         this.boss.UpdateTimer = 270000;
     },
@@ -185,10 +200,10 @@ PhaserGame.prototype = {
             this.boss.body.velocity.y = -this.boss.body.velocity.y;
     },
 
-    createAlien: function (HP) {
+    createAlien: function (area) {
         var i = 0;
         for (i; i < 10; i++) {
-            this.enemy.add(new Alien(this.game, HP, i));
+            this.enemy.add(new Alien(this.game, area, i));
         }
         this.updateTimer = game.time.now + 10000;
     },
@@ -262,7 +277,7 @@ PhaserGame.prototype = {
             if (this.ufo) {
                 if (!this.player.unbeatable)
                     this.game.physics.arcade.overlap(this.player, this.ufo,
-                        this.collide, null, this);
+                        this.collideUfo, null, this);
                 else if (game.time.now > this.player.unbeatableTimer)
                     this.player.recover();
                 this.game.physics.arcade.overlap(this.weapon1, this.ufo,
@@ -289,11 +304,11 @@ PhaserGame.prototype = {
                     else if (game.time.now > this.player.unbeatableTimer)
                         this.player.recover();
                     this.game.physics.arcade.overlap(this.weapon1, this.boss,
-                        this.hitEnemy, null, this);
+                        this.hitBoss, null, this);
                     this.game.physics.arcade.overlap(this.weapon2, this.boss,
-                        this.hitEnemy, null, this);
+                        this.hitBoss, null, this);
                     this.game.physics.arcade.overlap(this.weapon3, this.boss,
-                        this.hitEnemy, null, this);
+                        this.hitBoss, null, this);
                 }
             }
             if (this.enemy.countLiving() > 0) {
@@ -318,12 +333,9 @@ PhaserGame.prototype = {
             if (game.time.now > this.updateTimer) {
                 if (this.boss) {
                     if (!this.boss.alive)
-                        this.createAlien(3);
+                        this.createAlien(this.area);
                 } else if (!this.boss) {
-                    this.createAlien(3);
-                    if (game.time.now > 91000) {
-                        this.createBoss(200);
-                    }
+                    this.createAlien(this.area);
                 }
             }
 
@@ -343,6 +355,12 @@ PhaserGame.prototype = {
                 this.award3.move(this.game);
                 this.game.physics.arcade.overlap(this.player, this.award3,
                     this.collideaward3, null, this);
+            }
+
+            if (this.award4) {
+                this.award4.move(this.game);
+                this.game.physics.arcade.overlap(this.player, this.award4,
+                    this.collideaward4, null, this);
             }
 
             if (this.enemyRockets.countLiving() > 0) {
@@ -398,6 +416,7 @@ PhaserGame.prototype = {
         bullet.kill();
 
         player.bulletLV = 1;
+        player.enableRocket = false;
         player.becomeUnbeatable(1500);
 
         var explosion = this.explosions.getFirstExists(false);
@@ -415,7 +434,8 @@ PhaserGame.prototype = {
         var explosion = this.explosions.getFirstExists(false);
         explosion.reset(ufo.body.x, ufo.body.y);
         explosion.play('kaboom', 30, false, true);
-        var list = parseInt(Math.random() * 10) % 3;
+        var list = parseInt(Math.random() * 10) % 4;
+        list = 3;
         switch (list) {
             case 0:
                 if (this.award1)
@@ -433,7 +453,9 @@ PhaserGame.prototype = {
                 this.award3 = new Award.Unbeatable(this.game, ufo);
                 break;
             case 3:
-                changeToLightningState();
+                if (this.award4)
+                    this.award4.kill();
+                this.award4 = new Award.getRocket(this.game, ufo);
                 break;
             case 4:
                 changeToFireState();
@@ -451,7 +473,7 @@ PhaserGame.prototype = {
         var explosion = this.explosions.getFirstExists(false);
         explosion.reset(ufo.body.x, ufo.body.y);
         explosion.play('kaboom', 30, false, true);
-        var list = parseInt(Math.random() * 10) % 3;
+        var list = parseInt(Math.random() * 10) % 4;
         switch (list) {
             case 0:
                 if (this.award1)
@@ -469,7 +491,9 @@ PhaserGame.prototype = {
                 this.award3 = new Award.Unbeatable(this.game, ufo);
                 break;
             case 3:
-                changeToLightningState();
+                if (this.award4)
+                    this.award4.kill();
+                this.award4 = new Award.getRocket(this.game, ufo);
                 break;
             case 4:
                 changeToFireState();
@@ -479,8 +503,18 @@ PhaserGame.prototype = {
     hitEnemy: function (enemy, bullet) {
         bullet.kill();
         enemy.HP -= bullet.damage;
-        if (enemy.HP <= 0)
+        if (enemy.HP <= 0) {
             enemy.kill();
+            this.totalEnemy -= 1;
+            console.log(this.totalEnemy);
+            console.log(this.boss == null);
+            if ((this.totalEnemy <= 0) && (this.boss == null)) {
+                if (this.enemy.countLiving() > 0)
+                    this.updateTimer = game.time.now + 10000;
+                else
+                    this.createBoss();
+            }
+        }
         this.showScore(bullet.score);
 
         var explosion = this.explosions.getFirstExists(false);
@@ -488,22 +522,52 @@ PhaserGame.prototype = {
         explosion.play('kaboom', 30, false, true);
 
     },
-    rocketHitBoss: function (rocket, boss) {
+    hitBoss: function (boss, bullet) {
+        bullet.kill();
+        boss.HP -= bullet.damage;
+        if (boss.HP <= 0) {
+            boss.kill();
+            this.boss = null;
+            this.area += 1;
+            this.areaText.text = this.areaString + this.area;
+            this.totalEnemy = 50 + (this.area - 1) * 10;
+        }
+        this.showScore(bullet.score);
+
+        var explosion = this.explosions.getFirstExists(false);
+        explosion.reset(bullet.body.x, bullet.body.y);
+        explosion.play('kaboom', 30, false, true);
+    },
+
+    rocketHitBoss: function (boss, rocket) {
         rocket.kill();
         boss.HP -= rocket.damage;
-        if (boss.HP <= 0)
+        if (boss.HP <= 0) {
             boss.kill();
+            this.boss = null;
+            this.area += 1;
+            this.areaText.text = this.areaString + this.area;
+            this.totalEnemy = 50 + (this.area - 1) * 10;
+        }
         this.showScore(rocket.score);
         var explosion = this.explosions.getFirstExists(false);
         explosion.reset(rocket.body.x, rocket.body.y + rocket.body.height);
         explosion.play('kaboom', 30, false, true);
-        this.boss = null;
+
     },
     rocketHitEnemy: function (rocket, enemy) {
         rocket.kill();
         enemy.HP -= rocket.damage;
-        if (enemy.HP <= 0)
+        if (enemy.HP <= 0) {
             enemy.kill();
+            this.totalEnemy -= 1;
+            if ((this.totalEnemy <= 0) && (this.boss == null)) {
+                if (this.enemy.countLiving() > 0)
+                    this.updateTimer = game.time.now + 10000;
+                else
+                    this.createBoss();
+            }
+        }
         this.showLives(rocket.score);
 
         var explosion = this.explosions.getFirstExists(false);
@@ -532,6 +596,7 @@ PhaserGame.prototype = {
         this.ufo.checkWorldBounds = true;
         this.ufo.outOfBoundsKill = true;
         this.ufo.anchor.setTo(0, 0);
+        this.ufo.HP = 1;
         this.game.physics.enable(this.ufo, Phaser.Physics.ARCADE);
         this.game.physics.arcade.moveToObject(this.ufo, this.player, 240);
         this.ufoTimer = game.time.now + 30000;
@@ -548,8 +613,57 @@ PhaserGame.prototype = {
     collide: function (player, enemy) {
         player.setLives(-1);
         this.showLives();
+        enemy.HP -= 1;
+        if (enemy.HP <= 0) {
+            enemy.kill();
+            this.totalEnemy -= 1;
+            if (this.totalEnemy == 0 && this.boss == null)
+                this.createBoss();
+        }
 
         player.bulletLV = 1;
+        player.enableRocket = false;
+        player.becomeUnbeatable(1500);
+
+        var explosion = this.explosions.getFirstExists(false);
+        explosion.reset(player.body.x, player.body.y);
+        explosion.play('kaboom', 30, false, true);
+    },
+    collideUfo: function (player, ufo) {
+        player.setLives(-1);
+        this.showLives();
+        ufo.HP -= 1;
+        if (ufo.HP <= 0) {
+            ufo.kill();
+            this.ufo = null;
+            var list = parseInt(Math.random() * 10) % 4;
+            switch (list) {
+                case 0:
+                    if (this.award1)
+                        this.award1.kill();
+                    this.award1 = new Award.BulletUP(this.game, ufo);
+                    break;
+                case 1:
+                    if (this.award2)
+                        this.award2.kill();
+                    this.award2 = new Award.OneUP(this.game, ufo);
+                    break;
+                case 2:
+                    if (this.award3)
+                        this.award3.kill();
+                    this.award3 = new Award.Unbeatable(this.game, ufo);
+                    break;
+                case 3:
+                    if (this.award4)
+                        this.award4.kill();
+                    this.award4 = new Award.getRocket(this.game, ufo);
+                    break;
+                case 4:
+                    changeToFireState();
+            }
+        }
+        player.bulletLV = 1;
+        player.enableRocket = false;
         player.becomeUnbeatable(1500);
 
         var explosion = this.explosions.getFirstExists(false);
@@ -576,6 +690,12 @@ PhaserGame.prototype = {
         player.becomeUnbeatable(10000);
         award.kill();
     },
+    collideaward4: function (player, award) {
+        var score = 100;
+        this.showScore(score);
+        player.enableRocket = true;
+        award.kill();
+    },
     getTarget: function () {
         this.playerRockets.forEachAlive(function (rocket) {
 
@@ -584,6 +704,8 @@ PhaserGame.prototype = {
             } else if (this.ufo) {
                 if (this.ufo.alive)
                     rocket.target = this.ufo;
+                else
+                    this.ufo = null;
             } else if (this.enemy.countLiving() > 0) {
                 rocket.getTarget(this.enemy);
             } else if (this.boss) {
