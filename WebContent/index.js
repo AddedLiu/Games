@@ -1,5 +1,5 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
-
+var area = 0;
 var PhaserGame = function () {
     // Background
     this.background = null;
@@ -139,6 +139,14 @@ PhaserGame.prototype = {
             font: '34px Arial',
             fill: '#fff'
         });
+        this.areaState = this.game.add.text(250, 200, this.areaString
+            + this.area, {
+            font: '100px Arial',
+            fill: '#fff'
+        });
+        this.areaState.anchor.setTo(0, 0);
+        this.areaState.disapearTimer = 0;
+        this.showArea();
         // Lives tag
         this.livesString = 'Lives:';
         this.game.add.text(this.game.world.width - 100, 10, 'Lives : ', {
@@ -159,7 +167,21 @@ PhaserGame.prototype = {
         //this.createBoss();
 
     },
-
+    showArea: function() {
+        if(area != this.area){
+            this.areaState.visible = true;
+            this.areaState.text = this.areaString + this.area;
+            area = this.area;
+            this.areaState.disapearTimer = game.time.now + 3000;
+        }
+        if(game.time.now > this.areaState.disapearTimer)
+            this.areaState.visible = false;
+        else{
+            var alpha = (this.areaState.disapearTimer - game.time.now)/3000;
+            this.areaState.alpha = alpha;
+        }
+        console.log(this.areaState.disapearTimer);
+    },
     fireBullet: function () {
 
         this.weapon1.fire(this.player);
@@ -267,7 +289,7 @@ PhaserGame.prototype = {
                 this.game.physics.arcade.overlap(this.playerRockets, this.boss,
                     this.rocketHitBoss, null, this);
             }
-
+            this.showArea();
             if (!this.player.unbeatable)
                 this.game.physics.arcade.overlap(this.enemyWeapon, this.player,
                     this.enemyHit, null, this);
@@ -435,7 +457,6 @@ PhaserGame.prototype = {
         explosion.reset(ufo.body.x, ufo.body.y);
         explosion.play('kaboom', 30, false, true);
         var list = parseInt(Math.random() * 10) % 4;
-        list = 3;
         switch (list) {
             case 0:
                 if (this.award1)
@@ -506,8 +527,6 @@ PhaserGame.prototype = {
         if (enemy.HP <= 0) {
             enemy.kill();
             this.totalEnemy -= 1;
-            console.log(this.totalEnemy);
-            console.log(this.boss == null);
             if ((this.totalEnemy <= 0) && (this.boss == null)) {
                 if (this.enemy.countLiving() > 0)
                     this.updateTimer = game.time.now + 10000;
@@ -531,6 +550,7 @@ PhaserGame.prototype = {
             this.area += 1;
             this.areaText.text = this.areaString + this.area;
             this.totalEnemy = 50 + (this.area - 1) * 10;
+
         }
         this.showScore(bullet.score);
 
@@ -548,6 +568,7 @@ PhaserGame.prototype = {
             this.area += 1;
             this.areaText.text = this.areaString + this.area;
             this.totalEnemy = 50 + (this.area - 1) * 10;
+
         }
         this.showScore(rocket.score);
         var explosion = this.explosions.getFirstExists(false);
