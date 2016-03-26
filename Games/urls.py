@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from blockbreak.views import HomePageView
+# from Invaders.views import HomePageView
 
 urlpatterns = [
-    url(r'^blockbreak/', include('blockbreak.urls')),
+    url(r'Invaders', include('Invaders.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^$', HomePageView.as_view(), name='home'),
+    # url(r'^$', HomePageView.as_view(), name='home'),
 ]
