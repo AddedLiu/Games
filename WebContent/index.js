@@ -25,6 +25,7 @@ var PhaserGame = function () {
     // Some controls to play the game with
     this.cursors;
     this.fireButton;
+    this.pauseButton;
 
     // The score
     this.scoreString = '';
@@ -123,6 +124,8 @@ PhaserGame.prototype = {
         // And some controls to play the game with
         this.cursors = this.input.keyboard.createCursorKeys();
         this.fireButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.pauseButton = this.input.keyboard.addKey(Phaser.Keyboard.P);
+        this.pauseButton.onDown.add(this.togglePause, this);
         // An explosion pool
         this.explosions = this.game.add.group();
         this.explosions.createMultiple(30, 'kaboom');
@@ -167,17 +170,17 @@ PhaserGame.prototype = {
         //this.createBoss();
 
     },
-    showArea: function() {
-        if(area != this.area){
+    showArea: function () {
+        if (area != this.area) {
             this.areaState.visible = true;
             this.areaState.text = this.areaString + this.area;
             area = this.area;
             this.areaState.disapearTimer = game.time.now + 3000;
         }
-        if(game.time.now > this.areaState.disapearTimer)
+        if (game.time.now > this.areaState.disapearTimer)
             this.areaState.visible = false;
-        else{
-            var alpha = (this.areaState.disapearTimer - game.time.now)/3000;
+        else {
+            var alpha = (this.areaState.disapearTimer - game.time.now) / 3000;
             this.areaState.alpha = alpha;
         }
         console.log(this.areaState.disapearTimer);
@@ -410,8 +413,13 @@ PhaserGame.prototype = {
                 }, this);
             }
 
-        } else
-            this.game.physics.arcade.isPaused = true;
+        }
+
+    },
+    togglePause: function () {
+
+        this.game.physics.arcade.isPaused = !this.game.physics.arcade.isPaused;
+
     },
     enemyFire: function (source) {
         if (source.alive)
