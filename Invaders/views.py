@@ -7,7 +7,8 @@ from .models import User
 
 
 def index(request):
-    return render(request, 'Invaders/index.html')
+    output = "liuchuang"
+    return render(request, 'Invaders/index.html', {'output': output})
 
 
 def register(request):
