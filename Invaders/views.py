@@ -7,7 +7,7 @@ from .models import User
 
 
 def index(request):
-    output = "liuchuang"
+    output = "welcome"
     return render(request, 'Invaders/index.html', {'output': output})
 
 
