@@ -12,7 +12,7 @@ def index(request):
 
 
 def register(request):
-    return render(request, 'Invaders/registration_form.html')
+    return render(request, 'Invaders/register.html')
 
 
 def register_success(request):
