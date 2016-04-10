@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import User
 
@@ -36,5 +37,40 @@ def do_register(request):
         return HttpResponseRedirect(reverse('Invaders:register_fail'))
     else:
         return HttpResponseRedirect(reverse('Invaders:register_success'))
+
+
+def do_logout(request):
+    """
+    logout
+    """
+    try:
+        del request.session['logged_in_user']
+    except KeyError as e:
+        print(e)
+    return HttpResponseRedirect(reverse('Invaders:index'))
+
+
+def login(request):
+    """
+    Login
+    """
+    return render(request, 'Invaders/login.html')
+
+
+def do_login(request):
+    """
+    Try to login
+    """
+    try:
+        user = User.objects.get(username=request.POST['username'])
+        if user.password == request.POST['password']:
+            request.session['logged_in_user'] = user
+            return HttpResponseRedirect(reverse('Invaders:index'))
+        else:
+            return render(request, 'Invaders/login.html', {'username': user.username,
+                                                           'error_message': 'Login failed, please try again'})
+    except (KeyError, User.DoesNotExist):
+        return render(request, 'Invaders/login.html',
+                      {'error_message': "Login failed, user does not exist"})
 
 # Create your views here.

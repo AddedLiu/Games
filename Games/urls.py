@@ -18,8 +18,7 @@ from django.contrib import admin
 # from Invaders.views import HomePageView
 
 urlpatterns = [
-    url(r'^Invaders', include('registration.backends.simple.urls')),
-    url(r'Invaders', include('Invaders.urls')),
+    url(r'Invaders/', include('Invaders.urls')),
     url(r'^admin/', admin.site.urls),
     # url(r'^$', HomePageView.as_view(), name='home'),
 ]
