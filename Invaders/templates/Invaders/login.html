@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{% block title %}
+Login
+{% endblock %}
+<body>
+<form  name="login" method="post" action="{% url 'Invaders:do_login' %}">
+    {% csrf_token %}
+    <table>
+        <tr align="center">
+            <td colspan="2"><span class="alert">{{ error_message }}</span></td>
+        </tr>
+        <tr align="center">
+            <td><label for="username">Username:</label></td>
+            <td><input type="text" name="username" id="username" value="{{ username }}"/></td>
+        </tr>
+        <tr align="center">
+            <td><label for="password">Password:</label></td>
+            <td><input type="password" name="password" id="password" value=""/></td>
+        </tr>
+        <tr align="center">
+            <td colspan="2"><input type="submit" value="Login" class="submit-row"></td>
+        </tr>
+    </table>
+
+</form>
+
+</body>
+</html>
