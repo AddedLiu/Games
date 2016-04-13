@@ -1,3 +1,16 @@
-{{ output }}<br>
-<a href="{% url 'Invaders:register' %}">register</a>
-<a href="{% url 'Invaders:login' %}">login</a>
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}
+    Home
+{% endblock %}
+
+{% block action %}
+    <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
+    <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
+    <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
+    <script type="text/javascript" src="{% static "Invaders/Bullet.js" %}"></script>
+    <script type="text/javascript" src="{% static "Invaders/Player.js" %}"></script>
+    <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
+    <img src="{% static "Invaders/assets/thrust_ship2.png" %}" name="player">
+    <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
+{% endblock %}
