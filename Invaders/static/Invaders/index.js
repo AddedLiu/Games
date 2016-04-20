@@ -76,21 +76,20 @@ PhaserGame.prototype = {
     },
 
     preload: function () {
-        this.load.path="assets/";
-        this.load.image('background', 'starfield.jpg');
-        this.load.image('player', 'thrust_ship2.png');
-        this.load.image('bullet1', 'bullet0.png');
-        this.load.image('bullet2', 'bullet1.png');
-        this.load.image('bullet3', 'bullet2.png');
-        this.load.spritesheet('invader', 'invader32x32x4.png', 32, 32);
-        this.load.spritesheet('kaboom', 'explode.png', 128, 128);
-        this.load.image('boss', 'boss1.png');
-        this.load.image('ufo', 'ufo.png');
-        this.load.image('enemyBullet', 'enemy-bullet.png');
-        this.load.image('bulletUP', 'aqua_ball.png');
-        this.load.image('unbeatable', 'red_ball.png');
-        this.load.image('bullet10', 'bullet10.png');
-        this.load.image('rocket', 'purple_ball.png');
+        this.load.image('background', background_src);
+        this.load.image('player', player_src);
+        this.load.image('bullet1', bullet0_src);
+        this.load.image('bullet2', bullet1_src);
+        this.load.image('bullet3', bullet2_src);
+        this.load.spritesheet('invader', invader_src, 32, 32);
+        this.load.spritesheet('kaboom', explode_src, 128, 128);
+        this.load.image('boss', boss1_src);
+        this.load.image('ufo', ufo_src);
+        this.load.image('enemyBullet', enemy_bullet_src);
+        this.load.image('bulletUP', bulletUP_src);
+        this.load.image('unbeatable', unbeatable_src);
+        this.load.image('bullet10', bullet10_src);
+        this.load.image('rocket', rocket_src);
 
     },
 
@@ -184,7 +183,6 @@ PhaserGame.prototype = {
             var alpha = (this.areaState.disapearTimer - game.time.now) / 3000;
             this.areaState.alpha = alpha;
         }
-        console.log(this.areaState.disapearTimer);
     },
     fireBullet: function () {
 

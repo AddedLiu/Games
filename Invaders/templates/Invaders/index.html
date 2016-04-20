@@ -5,12 +5,29 @@
 {% endblock %}
 
 {% block action %}
+    <script>
+        var background_src = "{% static "Invaders/assets/starfield.jpg" %}";
+        var player_src = "{% static "Invaders/assets/thrust_ship2.png" %}";
+        var bullet0_src = "{% static "Invaders/assets/bullet0.png" %}";
+        var bullet1_src = "{% static "Invaders/assets/bullet1.png" %}";
+        var bullet2_src = "{% static "Invaders/assets/bullet2.png" %}";
+        var bullet10_src = "{% static "Invaders/assets/bullet10.png" %}";
+        var invader_src = "{% static "Invaders/assets/invader32x32x4.png" %}";
+        var explode_src = "{% static "Invaders/assets/explode.png" %}";
+        var boss1_src = "{% static "Invaders/assets/boss1.png" %}";
+        var ufo_src = "{% static "Invaders/assets/ufo.png" %}";
+        var enemy_bullet_src = "{% static "Invaders/assets/enemy-bullet.png" %}";
+        var bulletUP_src = "{% static "Invaders/assets/aqua_ball.png" %}";
+        var unbeatable_src = "{% static "Invaders/assets/red_ball.png" %}";
+        var rocket_src = "{% static "Invaders/assets/blue_ball.png" %}";
+
+    </script>
+
     <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
     <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
     <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
     <script type="text/javascript" src="{% static "Invaders/Bullet.js" %}"></script>
     <script type="text/javascript" src="{% static "Invaders/Player.js" %}"></script>
     <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
-    <img src="{% static "Invaders/assets/thrust_ship2.png" %}" name="player">
     <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
 {% endblock %}
