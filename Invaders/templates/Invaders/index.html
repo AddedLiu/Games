@@ -6,6 +6,14 @@
 
 {% block action %}
     <script>
+        {{ request }}
+        if (gameOver){
+                if(userHighScore){
+
+                }
+        }
+    </script>
+    <script>
         var background_src = "{% static "Invaders/assets/starfield.jpg" %}";
         var player_src = "{% static "Invaders/assets/thrust_ship2.png" %}";
         var bullet0_src = "{% static "Invaders/assets/bullet0.png" %}";
@@ -20,7 +28,6 @@
         var bulletUP_src = "{% static "Invaders/assets/aqua_ball.png" %}";
         var unbeatable_src = "{% static "Invaders/assets/red_ball.png" %}";
         var rocket_src = "{% static "Invaders/assets/blue_ball.png" %}";
-
     </script>
 
     <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>

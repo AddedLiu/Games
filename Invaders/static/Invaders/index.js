@@ -1,5 +1,7 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 var area = 0;
+gameOver = false;
+userHighScore = 0;
 var PhaserGame = function () {
     // Background
     this.background = null;
@@ -13,7 +15,7 @@ var PhaserGame = function () {
     this.enemyRockets = null;
     // Player Rocket's group
     this.playerRockets = null;
-
+    
     // weapons
     this.weapon1;
     this.weapon2;
@@ -413,7 +415,14 @@ PhaserGame.prototype = {
             }
 
         }
-
+        else {
+            gameOver = true;
+            if (userHighScore < this.score)
+                userHighScore = this.getScore();
+        }
+    },
+    getScore: function () {
+        return this.score;
     },
     togglePause: function () {
 

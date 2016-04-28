@@ -30,6 +30,7 @@ def do_register(request):
         user = User(username=username, password=password,
                     high_score=0, create_date=timezone.now())
         user.save()
+        request.session['high_score'] = user.high_score
         request.session['logged_in_user'] = user
     except KeyError as e:
         print(e)
@@ -72,4 +73,14 @@ def do_login(request):
         return render(request, 'Invaders/login.html',
                       {'error_message': "Login failed, user does not exist"})
 
-# Create your views here.
+
+def update_high_score(request):
+    try:
+        user = request.session['logged_in_user']
+        user.high_score = request.session['high_score']
+        return HttpResponseRedirect(reverse('Invaders:index'))
+    except (KeyError, User.DoesNotExist):
+        return render(request, 'Invaders/login.html',
+                      {'error_message': "Login failed, user does not exist"})
+
+        # Create your views here.
