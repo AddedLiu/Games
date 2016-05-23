@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^do_login/$', views.do_login, name='do_login'),
     url(r'^logout/$', views.do_logout, name='do_logout'),
+    url(r'^update_high_score/$', views.update_high_score, name='update_high_score'),
 ]

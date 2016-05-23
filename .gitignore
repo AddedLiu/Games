@@ -1,6 +1,6 @@
 # ignore .idea floald
-/.idea/*
+.idea/
 # ignore Invaders/__pycache__
-/Invaders/__pycache__/*
+Invaders/__pycache__/
 # ignore Games/__pycache__
-/Games/__pycache__/*
+Games/__pycache__/

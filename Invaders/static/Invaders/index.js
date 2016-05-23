@@ -1,5 +1,6 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 var area = 0;
+var xmlhttp;
 gameOver = false;
 userHighScore = 0;
 var PhaserGame = function () {
@@ -69,7 +70,7 @@ var PhaserGame = function () {
 };
 
 PhaserGame.prototype = {
-
+    // initalize game state
     init: function () {
 
         this.game.renderer.renderSession.roundPixels = true;
@@ -172,6 +173,7 @@ PhaserGame.prototype = {
         //this.createBoss();
 
     },
+    // show area message
     showArea: function () {
         if (area != this.area) {
             this.areaState.visible = true;
@@ -186,6 +188,7 @@ PhaserGame.prototype = {
             this.areaState.alpha = alpha;
         }
     },
+    //
     fireBullet: function () {
 
         this.weapon1.fire(this.player);
@@ -416,9 +419,22 @@ PhaserGame.prototype = {
 
         }
         else {
+            if (window.XMLHttpRequest)
+            {
+                // code for IE7+, FireFox, Chrome, Opera, Safari
+                xmlhttp = new XMLHttpRequest();
+            }
+            else
+            {
+                // code for IE6, IE5
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
             gameOver = true;
-            if (userHighScore < this.score)
+            if (userHighScore < this.score) {
                 userHighScore = this.getScore();
+                xmlhttp.open("GET", "/Invaders/update_high_score?userHighScore=" + userHighScore, true);
+                xmlhttp.send(userHighScore);
+            }
         }
     },
     getScore: function () {
