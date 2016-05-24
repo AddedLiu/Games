@@ -4,7 +4,26 @@
     Home
 {% endblock %}
 
-{% block action %}
+{% block body %}
+
+    {% if request.session.logged_in_user %}
+        Welcome {{ request.session.logged_in_user.username }}
+        <a href="{% url 'Invaders:do_logout' %}">logout</a>
+        <div class="container" align="center">
+            <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
+            <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
+            <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
+            <script type="text/javascript" src="{% static "Invaders/Bullet.js" %}"></script>
+            <script type="text/javascript" src="{% static "Invaders/Player.js" %}"></script>
+            <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
+            <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
+        </div>
+    {% else %}
+        Welcome Costumer &nbsp;
+        <a href="{% url 'Invaders:register' %}">register</a>
+        /<a href="{% url 'Invaders:login' %}">login</a>
+    {% endif %}
+
     <script>
         var background_src = "{% static "Invaders/assets/starfield.jpg" %}";
         var player_src = "{% static "Invaders/assets/thrust_ship2.png" %}";
@@ -22,11 +41,4 @@
         var rocket_src = "{% static "Invaders/assets/blue_ball.png" %}";
     </script>
 
-    <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
-    <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
-    <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
-    <script type="text/javascript" src="{% static "Invaders/Bullet.js" %}"></script>
-    <script type="text/javascript" src="{% static "Invaders/Player.js" %}"></script>
-    <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
-    <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
 {% endblock %}
