@@ -4,3 +4,7 @@
 Invaders/__pycache__/
 # ignore Games/__pycache__
 Games/__pycache__/
+# ignore bootstrap and jquery
+Invaders/static/Invaders/css/bootstrap.min.css
+Invaders/static/Invaders/js/jquery-2.2.4.js
+Invaders/static/Invaders/js/bootstrap.min.js

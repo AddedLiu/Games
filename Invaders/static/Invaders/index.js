@@ -2,7 +2,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 var area = 0;
 var xmlhttp;
 gameOver = false;
-userHighScore = 0;
+userScore = 0;
 var PhaserGame = function () {
     // Background
     this.background = null;
@@ -430,10 +430,10 @@ PhaserGame.prototype = {
                 xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
             }
             gameOver = true;
-            if (userHighScore < this.score) {
-                userHighScore = this.getScore();
-                xmlhttp.open("GET", "/Invaders/update_high_score?userHighScore=" + userHighScore, true);
-                xmlhttp.send(userHighScore);
+            if (userScore < this.score) {
+                userScore = this.getScore();
+                xmlhttp.open("GET", "/Invaders/update_high_score?userScore=" + userScore, true);
+                xmlhttp.send(null);
             }
         }
     },

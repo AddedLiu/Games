@@ -2,25 +2,25 @@
 {% block title %}
     Login
 {% endblock %}
+{% block navigation %}
+    <div class="container">
+        <div class="navbar-header" role="log">
+            <span class="navbar-brand">Login</span>
+        </div>
+    </div>
+{% endblock %}
 {% block body %}
-    <form name="login" method="post" action="{% url 'Invaders:do_login' %}">
-        {% csrf_token %}
-        <table>
-            <tr align="center">
-                <td colspan="2"><span class="alert">{{ error_message }}</span></td>
-            </tr>
-            <tr align="center">
-                <td><label for="username">Username:</label></td>
-                <td><input type="text" name="username" id="username" value="{{ username }}"/></td>
-            </tr>
-            <tr align="center">
-                <td><label for="password">Password:</label></td>
-                <td><input type="password" name="password" id="password" value=""/></td>
-            </tr>
-            <tr align="center">
-                <td colspan="2"><input type="submit" value="Login" class="submit-row"></td>
-            </tr>
-        </table>
-
-    </form>
+    <div class="pure-form">
+        <form class="form-signin" name="login" method="post" action="{% url 'Invaders:do_login' %}">
+            {% csrf_token %}
+            <span class="alert">{{ error_message }}</span>
+            <h2 class="form-signin-heading">Please login</h2>
+            <label for="username" class="sr-only">User Name</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="User Name" required
+                   autofocus>
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="password" required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+        </form>
+    </div>
 {% endblock %}

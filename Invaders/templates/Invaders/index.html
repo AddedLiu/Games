@@ -4,12 +4,30 @@
     Home
 {% endblock %}
 
-{% block body %}
+{% block navigation %}
+    <div class="container">
+        <div class="navbar-header">
+            <span class="navbar-brand" >Home</span>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav pull-right">
+                {% if request.session.logged_in_user %}
+                    <li ><a href="#">Welcome {{ request.session.logged_in_user.username }}</a></li>
+                    <li><a href="{% url 'Invaders:do_logout' %}">logout</a></li>
+                {% else %}
+                    <li><a href="#">Welcome Costumer &nbsp;</a></li>
+                    <li><a href="{% url 'Invaders:register' %}">Register</a></li>
+                    <li><a href="{% url 'Invaders:login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
 
+{% block body %}
+<div class="container pull-right body">
     {% if request.session.logged_in_user %}
-        Welcome {{ request.session.logged_in_user.username }}
-        <a href="{% url 'Invaders:do_logout' %}">logout</a>
-        <div class="container" align="center">
+        <div class="col-lg-10 canvas" id="phaser-game">
             <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
             <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
             <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
@@ -18,12 +36,15 @@
             <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
             <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
         </div>
-    {% else %}
-        Welcome Costumer &nbsp;
-        <a href="{% url 'Invaders:register' %}">register</a>
-        /<a href="{% url 'Invaders:login' %}">login</a>
     {% endif %}
-
+    <div class="col-lg-2">
+        <table >
+            <tr>
+                <th>SCORE</th>
+                <th>NAME</th>
+        </table>
+    </div>
+</div>
     <script>
         var background_src = "{% static "Invaders/assets/starfield.jpg" %}";
         var player_src = "{% static "Invaders/assets/thrust_ship2.png" %}";
