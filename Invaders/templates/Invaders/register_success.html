@@ -4,6 +4,14 @@
 Register success
 {% endblock %}
 
-{% block action %}
+{% block navigation %}
+    <div class="container">
+        <div class="navbar-header" role="log">
+            <span class="navbar-brand">Congratulation</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
     <a href="{% url 'Invaders:index' %}">Home</a>
 {% endblock %}

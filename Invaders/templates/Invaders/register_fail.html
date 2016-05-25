@@ -4,7 +4,15 @@
 Register fail!
 {% endblock %}
 
-{% block action %}
+{% block navigation %}
+    <div class="container">
+        <div class="navbar-header" role="log">
+            <span class="navbar-brand">Please try again</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
     <a href="{% url 'Invaders:register' %}">Try again</a>
     <a href="{% url 'Invaders:login' %}">login</a>
 {% endblock %}

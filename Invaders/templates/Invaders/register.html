@@ -7,35 +7,64 @@
 {% block navigation %}
     <div class="container">
         <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="#">Register</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav pull-right">
+                <li class="text-uppercase"><a href="{% url 'Invaders:login' %}">Login</a></li>
+            </ul>
         </div>
     </div>
 {% endblock %}
 {% block body %}{% endblock %}
 {% block content %}
-    <form name="register" method="post" action="{% url 'Invaders:do_register' %}">
-        {% csrf_token %}
-        <table>
-            <tr align="center">
-                <td colspan="2"><span class="alert">{{ error_message }}</span></td>
-            </tr>
-            <tr align="center">
-                <td><label for="username">Username：</label></td>
-                <td><input type="text" name="username" id="username" class="username"
-                           placeholder="e.g.:wustzz"/><span>*</span></td>
-            </tr>
-            <tr align="center">
-                <td><label for="password">Password:</label></td>
-                <td><input type="password" name="password" id="password" class="password"/><span>*</span></td>
-            </tr>
-            <tr align="center">
-                <td><label for="confirm_password">Confirm password:</label></td>
-                <td><input type="password" name="confirm_password" id="confirm_password"
-                           class="confirm_password"/><span>*</span></td>
-            </tr>
-            <tr align="center">
-                <td colspan="2"><input type="submit" value="Register" class="submit_btn"/></td>
-            </tr>
-        </table>
-    </form>
+    <div class="pure-form">
+        <form class="form-signin" name="login" method="post" action="{% url 'Invaders:do_register' %}">
+            {% csrf_token %}
+            <span class="alert">{{ error_message }}</span>
+            <h2 class="form-signin-heading">Please sign up</h2>
+            <label for="username" class="sr-only">User Name</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="User Name" required
+                   autofocus>
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="password" required>
+            <label for="confirm_password" class="sr-only">Confirm password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                   placeholder="confirm password" required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit"><p class="text-uppercase">Create free
+                account</p></button>
+        </form>
+    </div>
+    {#    <form name="register" method="post" action="{% url 'Invaders:do_register' %}">#}
+    {#        {% csrf_token %}#}
+    {#        <table>#}
+    {#            <tr align="center">#}
+    {#                <td colspan="2"><span class="alert">{{ error_message }}</span></td>#}
+    {#            </tr>#}
+    {#            <tr align="center">#}
+    {#                <td><label for="username">Username：</label></td>#}
+    {#                <td><input type="text" name="username" id="username" class="username"#}
+    {#                           placeholder="e.g.:wustzz"/><span>*</span></td>#}
+    {#            </tr>#}
+    {#            <tr align="center">#}
+    {#                <td><label for="password">Password:</label></td>#}
+    {#                <td><input type="password" name="password" id="password" class="password"/><span>*</span></td>#}
+    {#            </tr>#}
+    {#            <tr align="center">#}
+    {#                <td><label for="confirm_password">Confirm password:</label></td>#}
+    {#                <td><input type="password" name="confirm_password" id="confirm_password"#}
+    {#                           class="confirm_password"/><span>*</span></td>#}
+    {#            </tr>#}
+    {#            <tr align="center">#}
+    {#                <td colspan="2"><input type="submit" value="Register" class="submit_btn"/></td>#}
+    {#            </tr>#}
+    {#        </table>#}
+    {#    </form>#}
 {% endblock %}

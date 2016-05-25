@@ -4,8 +4,20 @@
 {% endblock %}
 {% block navigation %}
     <div class="container">
-        <div class="navbar-header" role="log">
-            <span class="navbar-brand">Login</span>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Login</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav pull-right">
+                <li class="text-uppercase"><a href="{% url 'Invaders:register' %}">Register</a></li>
+            </ul>
         </div>
     </div>
 {% endblock %}
@@ -14,7 +26,7 @@
         <form class="form-signin" name="login" method="post" action="{% url 'Invaders:do_login' %}">
             {% csrf_token %}
             <span class="alert">{{ error_message }}</span>
-            <h2 class="form-signin-heading">Please login</h2>
+            <h2 class="form-signin-heading">Please Login</h2>
             <label for="username" class="sr-only">User Name</label>
             <input type="text" id="username" name="username" class="form-control" placeholder="User Name" required
                    autofocus>

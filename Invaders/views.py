@@ -1,14 +1,15 @@
-from django.shortcuts import render, get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils import timezone
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import User
 
 
 def index(request):
-    return render(request, 'Invaders/index.html')
+    users = User.objects.get_queryset().order_by("-high_score")
+    return render(request, 'Invaders/index.html', {'users': users})
 
 
 def register(request):
@@ -25,18 +26,28 @@ def register_fail(request):
 
 def do_register(request):
     try:
-        username = request.POST['username']
-        password = request.POST['password']
-        user = User(username=username, password=password,
-                    high_score=0, create_date=timezone.now())
-        user.save()
-        request.session['high_score'] = user.high_score
-        request.session['logged_in_user'] = user
+        # if username is exist, return register fail
+        if User.objects.get(username=request.POST['username']):
+            return HttpResponseRedirect(reverse('Invaders:register_fail'))
     except KeyError as e:
         print(e)
         return HttpResponseRedirect(reverse('Invaders:register_fail'))
-    else:
-        return HttpResponseRedirect(reverse('Invaders:register_success'))
+    # When username isn't exist
+    except ObjectDoesNotExist:
+        username = request.POST['username']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        # if password equals confirm password, save this user and return register success
+        if password == confirm_password:
+            user = User(username=username, password=password,
+                        high_score=0, create_date=timezone.now())
+            user.save()
+            request.session['high_score'] = user.high_score
+            request.session['logged_in_user'] = user
+            return HttpResponseRedirect(reverse('Invaders:register_success'))
+        # if password != confirm password, return register fail
+        else:
+            return HttpResponseRedirect(reverse('Invaders:register_fail'))
 
 
 def do_logout(request):

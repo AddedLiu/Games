@@ -7,12 +7,19 @@
 {% block navigation %}
     <div class="container">
         <div class="navbar-header">
-            <span class="navbar-brand" >Home</span>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Invaders</a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav pull-right">
                 {% if request.session.logged_in_user %}
-                    <li ><a href="#">Welcome {{ request.session.logged_in_user.username }}</a></li>
+                    <li><a href="#">Welcome {{ request.session.logged_in_user.username }}</a></li>
                     <li><a href="{% url 'Invaders:do_logout' %}">logout</a></li>
                 {% else %}
                     <li><a href="#">Welcome Costumer &nbsp;</a></li>
@@ -25,26 +32,35 @@
 {% endblock %}
 
 {% block body %}
-<div class="container pull-right body">
-    {% if request.session.logged_in_user %}
-        <div class="col-lg-10 canvas" id="phaser-game">
-            <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
-            <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
-            <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
-            <script type="text/javascript" src="{% static "Invaders/Bullet.js" %}"></script>
-            <script type="text/javascript" src="{% static "Invaders/Player.js" %}"></script>
-            <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
-            <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
+    <div class="container right body">
+        {% if request.session.logged_in_user %}
+            <div class="col-lg-10 canvas" id="phaser-game">
+                <script type="text/javascript" src="{% static "Invaders/lib/phaser.js" %}"></script>
+                <script type="text/javascript" src="{% static "Invaders/Alien.js" %}"></script>
+                <script type="text/javascript" src="{% static "Invaders/Award.js" %}"></script>
+                <script type="text/javascript" src="{% static "Invaders/Bullet.js" %}"></script>
+                <script type="text/javascript" src="{% static "Invaders/Player.js" %}"></script>
+                <script type="text/javascript" src="{% static "Invaders/Weapon.js" %}"></script>
+                <script type="text/javascript" src="{% static "Invaders/index.js" %}"></script>
+            </div>
+        {% endif %}
+        <div class="col-lg-2">
+            <table class="table table-bordered">
+                <tr>
+                    <th>SCORE</th>
+                    <th>NAME</th>
+                </tr>
+                {% for user in users %}
+                    {% if user.high_score > 0 %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.high_score }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
         </div>
-    {% endif %}
-    <div class="col-lg-2">
-        <table >
-            <tr>
-                <th>SCORE</th>
-                <th>NAME</th>
-        </table>
     </div>
-</div>
     <script>
         var background_src = "{% static "Invaders/assets/starfield.jpg" %}";
         var player_src = "{% static "Invaders/assets/thrust_ship2.png" %}";

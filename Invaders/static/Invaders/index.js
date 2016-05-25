@@ -1,8 +1,8 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game');
 var area = 0;
 var xmlhttp;
-gameOver = false;
-userScore = 0;
+var gameOver = false;
+var userScore = 0;
 var PhaserGame = function () {
     // Background
     this.background = null;
@@ -419,6 +419,7 @@ PhaserGame.prototype = {
 
         }
         else {
+            // commit user score
             if (window.XMLHttpRequest)
             {
                 // code for IE7+, FireFox, Chrome, Opera, Safari
