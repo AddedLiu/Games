@@ -77,8 +77,10 @@ def do_login(request):
 def update_high_score(request):
     try:
         user = request.session['logged_in_user']
-        user.high_score = request.GET['userHighScore']
-        user.save()
+        score = int(request.GET['userScore'])
+        if score > user.get_score():
+            user.high_score = score
+            user.save()
         return HttpResponseRedirect(reverse('Invaders:index'))
     except (KeyError, User.DoesNotExist):
         return render(request, 'Invaders/login.html',
