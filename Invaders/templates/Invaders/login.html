@@ -12,9 +12,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Login</a>
+            <a class="navbar-brand" href="#">Invaders</a>
         </div>
         <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="text-uppercase">
+                    <a href="{% url 'Invaders:index' %}">Home</a>
+                </li>
+            </ul>
             <ul class="nav navbar-nav pull-right">
                 <li class="text-uppercase"><a href="{% url 'Invaders:register' %}">Register</a></li>
             </ul>
@@ -25,10 +30,10 @@
     <div class="pure-form">
         <form class="form-signin" name="login" method="post" action="{% url 'Invaders:do_login' %}">
             {% csrf_token %}
-            <span class="alert">{{ error_message }}</span>
+            <span class="alert text-danger">{{ error_message }}</span>
             <h2 class="form-signin-heading">Please Login</h2>
             <label for="username" class="sr-only">User Name</label>
-            <input type="text" id="username" name="username" class="form-control" placeholder="User Name" required
+            <input type="text" id="username" name="username" class="form-control" placeholder="username" required
                    autofocus>
             <label for="password" class="sr-only">Password</label>
             <input type="password" id="password" name="password" class="form-control" placeholder="password" required>

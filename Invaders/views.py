@@ -26,7 +26,7 @@ def register_fail(request):
 
 def do_register(request):
     try:
-        # if username is exist, return register fail
+        # if username is exist, redirect to register fail
         if User.objects.get(username=request.POST['username']):
             return HttpResponseRedirect(reverse('Invaders:register_fail'))
     except KeyError as e:
@@ -37,7 +37,7 @@ def do_register(request):
         username = request.POST['username']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
-        # if password equals confirm password, save this user and return register success
+        # if password equals confirm password, save this user and redirect to register success
         if password == confirm_password:
             user = User(username=username, password=password,
                         high_score=0, create_date=timezone.now())
@@ -45,7 +45,7 @@ def do_register(request):
             request.session['high_score'] = user.high_score
             request.session['logged_in_user'] = user
             return HttpResponseRedirect(reverse('Invaders:register_success'))
-        # if password != confirm password, return register fail
+        # if password isn't equals confirm password, redirect to register fail
         else:
             return HttpResponseRedirect(reverse('Invaders:register_fail'))
 
@@ -79,7 +79,7 @@ def do_login(request):
             return HttpResponseRedirect(reverse('Invaders:index'))
         else:
             return render(request, 'Invaders/login.html', {'username': user.username,
-                                                           'error_message': 'Login failed, please try again'})
+                                                           'error_message': 'password error, please try again'})
     except (KeyError, User.DoesNotExist):
         return render(request, 'Invaders/login.html',
                       {'error_message': "Login failed, user does not exist"})
