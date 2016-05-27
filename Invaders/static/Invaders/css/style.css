@@ -11,7 +11,6 @@
 .canvas {
     display: block;
     width: auto;
-  height: 100%;
 }
 
 .form-signin {
@@ -51,11 +50,11 @@
 }
 
 .footer {
+  position: relative;
+  bottom: 0;
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  /* Set the fixed height of the footer here */
   margin-top: 19px;
-  padding-top: 19px;
-  color: #777;
-  /*border-top: 1px solid #cccccc;*/
+  /*height: 60px;*/
+  background-color: #f5f5f5;
 }

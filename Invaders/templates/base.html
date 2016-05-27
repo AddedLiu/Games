@@ -16,11 +16,15 @@
     {% endblock %}
 </nav>
 
+<div class="container">
     {% block body %}{% endblock %}
     {% block content %}{% endblock %}
+
     <footer class="footer text-center">
         <p>&copy; 2016 Company, Inc.</p>
     </footer>
+</div>
+
 {# include jquery and bootstrap javascript file #}
 <script href="{% static 'Invaders/js/jquery-2.2.4.js' %}" type="text/javascript"></script>
 <script type="text/javascript" href="{% static 'Invaders/js/bootstrap.min.js' %}"></script>
