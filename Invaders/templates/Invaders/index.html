@@ -22,7 +22,7 @@
                     <li><a href="#">Welcome {{ request.session.logged_in_user.username }}</a></li>
                     <li><a href="{% url 'Invaders:do_logout' %}">logout</a></li>
                 {% else %}
-                    <li><a href="#">Welcome Costumer &nbsp;</a></li>
+                    <li><a href="#">Welcome Customer &nbsp;</a></li>
                     <li><a href="{% url 'Invaders:register' %}">Register</a></li>
                     <li><a href="{% url 'Invaders:login' %}">Login</a></li>
                 {% endif %}
