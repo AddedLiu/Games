@@ -56,9 +56,9 @@ var Rocket = function (game, weapon, key) {
 Rocket.prototype = Object.create(Phaser.Sprite.prototype);
 Rocket.prototype.constructor = Rocket;
 
-Rocket.prototype.getTarget = function (enemygroup) {
+Rocket.prototype.getTarget = function (enemyGroup) {
     var min = 800 * 800 + 600 * 600;
-    enemygroup.forEachAlive(function (enemy) {
+    enemyGroup.forEachAlive(function (enemy) {
         var a = (enemy.body.x - this.body.x) * (enemy.body.x - this.body.x);
         var b = (enemy.body.y - this.body.y) * (enemy.body.y - this.body.y);
         if (a + b < min) {
