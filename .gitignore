@@ -8,3 +8,5 @@ Games/__pycache__/
 Invaders/static/Invaders/css/bootstrap.min.css
 Invaders/static/Invaders/js/jquery-2.2.4.js
 Invaders/static/Invaders/js/bootstrap.min.js
+# 忽略数据库本地文件
+db.sqlite3
